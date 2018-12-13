@@ -8,9 +8,8 @@ namespace AftershipAPI
 	/// </summary>
 	public class Querystring
     {
-        private string query = "";
+        public string Query { get; set; } = "";
 
-        //careful, this constructor creates the first element with &
         public Querystring() { }
 
         public Querystring(string name, string value)
@@ -20,26 +19,26 @@ namespace AftershipAPI
 
         public void Add(string name, List<string> list)
         {
-            query += "&";
+            if(!string.IsNullOrEmpty(Query))
+                Query += "&";
 
-            string value = string.Join(",", list.ToArray());
-            Encode(name, value);
+            Encode(name, string.Join(",", list.ToArray()));
         }
 
         public void Add(string name, string value)
         {
-            query += "&";
+            if (!string.IsNullOrEmpty(Query))
+                Query += "&";
+
             Encode(name, value);
         }
 
         private void Encode(string name, string value)
         {
-            query += Uri.EscapeDataString(name);
-            query += "=";
-            query += Uri.EscapeDataString(value);
+            Query += $"{Uri.EscapeDataString(name)}={Uri.EscapeDataString(value)}";
         }
 
-        public string GetQuery() => query;
+        public string GetQuery() => Query;
 
         public override string ToString() => GetQuery();
     }
