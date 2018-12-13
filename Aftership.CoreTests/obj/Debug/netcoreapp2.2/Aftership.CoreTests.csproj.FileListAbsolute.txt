@@ -1,0 +1,11 @@
+C:\Users\adam.worley\Documents\Git\Aftership.Core\Aftership.CoreTests\bin\Debug\netcoreapp2.2\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+C:\Users\adam.worley\Documents\Git\Aftership.Core\Aftership.CoreTests\bin\Debug\netcoreapp2.2\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+C:\Users\adam.worley\Documents\Git\Aftership.Core\Aftership.CoreTests\bin\Debug\netcoreapp2.2\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+C:\Users\adam.worley\Documents\Git\Aftership.Core\Aftership.CoreTests\bin\Debug\netcoreapp2.2\Aftership.CoreTests.deps.json
+C:\Users\adam.worley\Documents\Git\Aftership.Core\Aftership.CoreTests\bin\Debug\netcoreapp2.2\Aftership.CoreTests.runtimeconfig.json
+C:\Users\adam.worley\Documents\Git\Aftership.Core\Aftership.CoreTests\bin\Debug\netcoreapp2.2\Aftership.CoreTests.runtimeconfig.dev.json
+C:\Users\adam.worley\Documents\Git\Aftership.Core\Aftership.CoreTests\bin\Debug\netcoreapp2.2\Aftership.CoreTests.dll
+C:\Users\adam.worley\Documents\Git\Aftership.Core\Aftership.CoreTests\obj\Debug\netcoreapp2.2\Aftership.CoreTests.csprojAssemblyReference.cache
+C:\Users\adam.worley\Documents\Git\Aftership.Core\Aftership.CoreTests\obj\Debug\netcoreapp2.2\Aftership.CoreTests.csproj.CoreCompileInputs.cache
+C:\Users\adam.worley\Documents\Git\Aftership.Core\Aftership.CoreTests\obj\Debug\netcoreapp2.2\Aftership.CoreTests.AssemblyInfoInputs.cache
+C:\Users\adam.worley\Documents\Git\Aftership.Core\Aftership.CoreTests\obj\Debug\netcoreapp2.2\Aftership.CoreTests.AssemblyInfo.cs

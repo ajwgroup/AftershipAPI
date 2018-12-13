@@ -1,0 +1,6 @@
+C:\Users\adam.worley\Documents\Git\Aftership.Core\Aftership.Core\bin\Debug\netcoreapp3.0\Aftership.Core.deps.json
+C:\Users\adam.worley\Documents\Git\Aftership.Core\Aftership.Core\bin\Debug\netcoreapp3.0\Aftership.Core.dll
+C:\Users\adam.worley\Documents\Git\Aftership.Core\Aftership.Core\obj\Debug\netcoreapp3.0\Aftership.Core.csprojAssemblyReference.cache
+C:\Users\adam.worley\Documents\Git\Aftership.Core\Aftership.Core\obj\Debug\netcoreapp3.0\Aftership.Core.csproj.CoreCompileInputs.cache
+C:\Users\adam.worley\Documents\Git\Aftership.Core\Aftership.Core\obj\Debug\netcoreapp3.0\Aftership.Core.AssemblyInfoInputs.cache
+C:\Users\adam.worley\Documents\Git\Aftership.Core\Aftership.Core\obj\Debug\netcoreapp3.0\Aftership.Core.AssemblyInfo.cs
