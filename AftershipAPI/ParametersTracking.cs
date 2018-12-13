@@ -11,6 +11,15 @@ namespace AftershipAPI
     public class ParametersTracking
     {
 
+        public int Page { get; set; }
+        public int Limit { get; set; }
+        public string Keyword { get; set; }
+        public DateTime CreatedAtMin { get; set; }
+        public DateTime CreatedAtMax { get; set; }
+        public string Lang { get; set; }
+        public int Total { get; set; }
+
+
         /** Unique courier code Use comma for multiple values. (Example: dhl,ups,usps) */
         private List<string> _slugs;
 
@@ -175,25 +184,10 @@ namespace AftershipAPI
             _fields = null;
         }
 
-        public int Page { get; set; }
-
-        public int Limit { get; set; }
-
-        public string Keyword { get; set; }
-
-        public DateTime CreatedAtMin { get; set; }
-
-        public DateTime CreatedAtMax { get; set; }
-
-        public string Lang { get; set; }
-
-        public int Total { get; set; }
-
-        /**
-    * Create a QueryString with all the fields of this class different of Null
-    *
-    * @return the string with the param codified in the QueryString
-    */
+        /// <summary>
+        /// Create a QueryString with all the fields of this class different of Null
+        /// </summary>
+        /// <returns>The string with the param codified in the QueryString</returns>
         public string GenerateQueryString()
         {
 
@@ -214,8 +208,6 @@ namespace AftershipAPI
             if (_tags != null) qs.Add("tag", string.Join(",", _tags));
 
             if (_fields != null) qs.Add("fields", string.Join(",", _fields));
-
-            //globalJSON.put("tracking", trackingJSON);
 
             return qs.GetQuery();
         }
