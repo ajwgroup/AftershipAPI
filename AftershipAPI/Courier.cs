@@ -5,6 +5,13 @@ namespace AftershipAPI
 {
     public class Courier
     {
+        public string Slug { get; set; }
+        public string Name { get; set; }
+        public string Phone { get; set; }
+        public string Other_name { get; set; }
+        public string Web_url { get; set; }
+        public List<string> RequireFields { get; set; }
+
 
         /** Default constructor with all the fields of the class */
         public Courier(string web_url, string slug, string name, string phone, string other_name)
@@ -24,6 +31,7 @@ namespace AftershipAPI
      * by the API.
      **/           // _trackingNumber = trackingJSON["tracking_number"]==null?null:(String)trackingJSON["tracking_number"];
 
+        
         public Courier(JObject jsonCourier)
         {
             Web_url = jsonCourier["web_url"] == null ? null : (string)jsonCourier["web_url"];
@@ -41,7 +49,6 @@ namespace AftershipAPI
                     RequireFields.Add(requireFieldsArray[i].ToString());
                 }
             }
-
         }
 
         public string TooString()
@@ -55,15 +62,7 @@ namespace AftershipAPI
                 '}';
         }
 
-        public string Slug { get; set; }
-        public string Name { get; set; }
-        public string Phone { get; set; }
-        public string Other_name { get; set; }
-
-        public string Web_url { get; set; }
-
-        public List<string> RequireFields { get; set; }
-
+        
         public void AddRequireField(string requierField)
         {
             if (RequireFields == null)
