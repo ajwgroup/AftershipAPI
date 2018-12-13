@@ -13,8 +13,8 @@ variables:
   NUGETDIR: ~/.nuget/NuGet
   NUGETPATH: ~/.nuget/NuGet/NuGet.Config
 
-  APP_PATH: ./${CI_PROJECT_NAME}
-  TEST_PATH: ./${CI_PROJECT_NAME}Tests
+  APP_PATH: ./AftershipAPI
+  TEST_PATH: ./AftershipAPITests
   PROD_NUGET: http://nuget.prod.aws.ajw-aviation.com/api/v2/Package
 
 before_script:
