@@ -81,9 +81,6 @@ namespace AftershipAPI
         /// Current status of tracking. 
         public StatusTag Tag { get; set; }
 
-        ///Unique Token
-        public string UniqueToken { get; set; }
-
         /// Array of Hash describes the checkpoint information. 
         public List<Checkpoint> Checkpoints { get; set; }
 
@@ -115,13 +112,13 @@ namespace AftershipAPI
             string destination_country_iso3 = (string)trackingJSON["destination_country_iso3"];
 
             if (destination_country_iso3 != null && destination_country_iso3 != string.Empty)
-            {
                 DestinationCountryISO3 = (ISO3Country)Enum.Parse(typeof(ISO3Country), destination_country_iso3);
-            }
+
             OrderID = trackingJSON["order_id"] == null ? null : (string)trackingJSON["order_id"];
+
             OrderIDPath = trackingJSON["order_id_path"] == null ? null : (string)trackingJSON["order_id_path"];
-            TrackingAccountNumber = trackingJSON["tracking_account_number"] == null ? null :
-                (string)trackingJSON["tracking_account_number"];
+
+            TrackingAccountNumber = trackingJSON["tracking_account_number"] == null ? null : (string)trackingJSON["tracking_account_number"];
             TrackingPostalCode = trackingJSON["tracking_postal_code"] == null ? null :
                 (string)trackingJSON["tracking_postal_code"];
             TrackingShipDate = trackingJSON["tracking_ship_date"] == null ? null :
@@ -181,12 +178,9 @@ namespace AftershipAPI
                 (StatusTag)Enum.Parse(typeof(StatusTag), (string)trackingJSON["tag"]);
 
             TrackedCount = trackingJSON["tracked_count"] == null ? 0 : (int)trackingJSON["tracked_count"];
-            UniqueToken = trackingJSON["unique_token"] == null ? null : (string)trackingJSON["unique_token"];
 
             // checkpoints
-            JArray checkpointsArray = trackingJSON["checkpoints"] == null ? null :
-                (JArray)trackingJSON["checkpoints"];
-
+            JArray checkpointsArray = trackingJSON["checkpoints"] == null ? null : (JArray)trackingJSON["checkpoints"];
 
             if (checkpointsArray != null && checkpointsArray.Count != 0)
             {
