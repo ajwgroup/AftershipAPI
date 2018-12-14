@@ -30,10 +30,7 @@ dotnet_build:
   stage: build
   image: microsoft/dotnet:2.2-sdk
   script:
-    - dotnet build ${APP_PATH}.sln /p:CollectCoverage=true
-  artifacts:
-    paths:
-      - coverage/
+    - dotnet build ${APP_PATH}.sln
   tags:
     - docker
 
@@ -41,7 +38,10 @@ dotnet_test:
   stage: test
   image: microsoft/dotnet:2.2-sdk
   script:
-    - dotnet test ${TEST_PATH}/${TEST_PATH}.csproj
+    - dotnet test ${TEST_PATH}/${TEST_PATH}.csproj /p:CollectCoverage=true
+  artifacts:
+    paths:
+      - coverage/
   tags:
     - docker
   dependencies:
