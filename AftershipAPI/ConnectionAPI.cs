@@ -34,30 +34,34 @@ namespace AftershipAPI
         /// <summary>
         /// Updates a tracking of your account
         /// </summary>
-        /// <param name="tracking">  A Tracking object with the information to update
-        ///                The fields TrackingNumber and Slug SHOULD be informed, otherwise an exception will be thrown
-        ///               The fields an user can update are: smses, emails, title, customerName, orderID, orderIDPath,
-        ///               customFields</param>
+        /// <param name="tracking">  
+        /// A Tracking object with the information to update
+        /// The fields TrackingNumber and Slug SHOULD be informed, otherwise an exception will be thrown
+        /// The fields an user can update are: smses, emails, title, customerName, orderID, orderIDPath,
+        /// customFields</param>
         /// <returns>The last Checkpoint object</returns>
         public Tracking PutTracking(Tracking tracking)
         {
-            string parametersExtra = "";
-
-            if (tracking.Id != null && !(tracking.Id.CompareTo("") == 0))
-            {
-                parametersExtra = tracking.Id;
-            }
-            else
-            {
-                string paramRequiredFields = ReplaceFirst(tracking.GetQueryRequiredFields(), "&", "?");
-                parametersExtra = tracking.Slug + "/" + tracking.TrackingNumber + paramRequiredFields;
-            }
+            string parametersExtra = ParametersExtra(tracking);
 
             JObject response = Request("PUT", "/trackings/" + parametersExtra, tracking.GeneratePutJSON());
 
             return new Tracking((JObject)response["data"]["tracking"]);
-
         }
+
+        private string ParametersExtra(Tracking tracking)
+        {
+            if (tracking.Id != null && !(tracking.Id.CompareTo("") == 0))
+            {
+                return tracking.Id;
+            }
+            else
+            {
+                string paramRequiredFields = ReplaceFirst(tracking.GetQueryRequiredFields(), "&", "?");
+                return tracking.Slug + "/" + tracking.TrackingNumber + paramRequiredFields;
+            }
+        }
+
         /// <summary>
         /// Return the tracking information of the last checkpoint of a single tracking
         /// </summary>
@@ -65,17 +69,7 @@ namespace AftershipAPI
         /// <returns>The last Checkpoint object</returns>
         public Checkpoint GetLastCheckpoint(Tracking tracking)
         {
-            string parametersExtra = "";
-
-            if (!string.IsNullOrEmpty(tracking.Id))
-            {
-                parametersExtra = tracking.Id;
-            }
-            else
-            {
-                string paramRequiredFields = ReplaceFirst(tracking.GetQueryRequiredFields(), "&", "?");
-                parametersExtra = tracking.Slug + "/" + tracking.TrackingNumber + paramRequiredFields;
-            }
+            string parametersExtra = ParametersExtra(tracking);
 
             JObject response = Request("GET", "/last_checkpoint/" + parametersExtra, null);
 
@@ -83,7 +77,6 @@ namespace AftershipAPI
 
             return (checkpointJSON.Count != 0) ? new Checkpoint(checkpointJSON) : null;
         }
-
 
         /// <summary>
         /// Return the tracking information of the last checkpoint of a single tracking
@@ -93,16 +86,13 @@ namespace AftershipAPI
         /// <param name="lang"> A String with the language desired. Support Chinese to English translation
         ///                      for china-ems and china-post only</param>
         /// <returns>The last Checkpoint object</returns>
-
         public Checkpoint GetLastCheckpoint(Tracking tracking, List<FieldCheckpoint> fields, string lang)
         {
-
-            string parameters = null;
-            Querystring qs = new Querystring();
+            var qs = new Querystring();
 
             if (fields != null) qs.Add("fields", string.Join(",", fields));
             if (lang != null && !lang.Equals("")) qs.Add("lang", lang);
-            parameters = ReplaceFirst(qs.ToString(), "&", "?");
+            string parameters = ReplaceFirst(qs.ToString(), "&", "?");
 
             string parametersExtra = "";
             if (tracking.Id != null && !tracking.Id.Equals(""))
@@ -121,6 +111,7 @@ namespace AftershipAPI
 
             return (checkpointJSON.Count != 0) ? new Checkpoint(checkpointJSON) : null;
         }
+
         /// <summary>
         /// Retrack an expired tracking once
         /// </summary>
@@ -130,7 +121,6 @@ namespace AftershipAPI
         ///                      for china-ems and china-post only</param>
         /// <returns> A JSONObject with the response. It will contain the status code of the operation, TrackingNumber,
         ///         Slug and active (to true)</returns>
-
         public bool Retrack(Tracking tracking)
         {
             string paramRequiredFields = ReplaceFirst(tracking.GetQueryRequiredFields(), "&", "?");
@@ -138,16 +128,10 @@ namespace AftershipAPI
             JObject response = Request("POST", "/trackings/" + tracking.Slug +
                 "/" + tracking.TrackingNumber + "/retrack" + paramRequiredFields, null);
 
-            if ((int)response["meta"]["code"] == 200)
-            {
-                return (bool)response["data"]["tracking"]["active"];
-            }
-            else
-            {
-                return false;
-            }
-
+            return IsOKResponse(response) ? (bool)response["data"]["tracking"]["active"] : false;
         }
+
+        private static bool IsOKResponse(JObject response) => (int)response["meta"]["code"] == 200;
 
         /// <summary>
         ///Get as much as 100 trackings from your account, created less than 30 days ago. If you delete right before,
@@ -156,24 +140,16 @@ namespace AftershipAPI
         /// <param name="param">page Indicated the page of 100 trackings to return, if page is 1 will return the first 100,
         ///  if is 2 -> 100-200 etc</param> 
         /// <returns> A List of Tracking Objects from your account. Max 100 trackings
-
         public List<Tracking> GetTrackings(int page)
         {
             JObject response = Request("GET", "/trackings?limit=100&page=" + page, null);
             JArray trackingJSON = (JArray)response["data"]["trackings"];
+
             if (trackingJSON.Count != 0)
             {
-                var trackingList = new List<Tracking>();
-
-                for (int i = 0; i < trackingJSON.Count; i++)
-                {
-                    trackingList.Add(new Tracking((JObject)trackingJSON[i]));
-                }
-
-                return trackingList;
+                return trackingJSON.Select(tracking => new Tracking((JObject)tracking)).ToList();
             }
             return null;
-
         }
 
         /// <summary>
@@ -200,7 +176,6 @@ namespace AftershipAPI
             return trackingList;
         }
 
-
         /// <summary>
         ///Return a list of couriers supported by AfterShip along with their names, URLs and slugs
         /// </summary>
@@ -209,17 +184,7 @@ namespace AftershipAPI
         {
             JObject response = Request("GET", "/couriers/all", null);
 
-            JArray couriersJSON = (JArray)response["data"]["couriers"];
-            List<Courier> couriers = new List<Courier>(couriersJSON.Count);
-
-            for (int i = 0; i < couriersJSON.Count; i++)
-            {
-                JObject element = (JObject)couriersJSON[i];
-
-                Courier newCourier = new Courier(element);
-                couriers.Add(newCourier);
-            }
-            return couriers;
+            return ListOfCouriersFromJsonDataCouriers(response);
         }
 
         /// <summary>
@@ -229,18 +194,14 @@ namespace AftershipAPI
         public List<Courier> GetCouriers()
         {
             JObject response = Request("GET", "/couriers", null);
+            return ListOfCouriersFromJsonDataCouriers(response);
+        }
 
+        private static List<Courier> ListOfCouriersFromJsonDataCouriers(JObject response)
+        {
             JArray couriersJSON = (JArray)response["data"]["couriers"];
-            List<Courier> couriers = new List<Courier>(couriersJSON.Count);
 
-            for (int i = 0; i < couriersJSON.Count; i++)
-            {
-                JObject element = (JObject)couriersJSON[i];
-
-                var newCourier = new Courier(element);
-                couriers.Add(newCourier);
-            }
-            return couriers;
+            return couriersJSON.Select(courier => new Courier((JObject)courier)).ToList();
         }
 
         /// <summary>
@@ -251,8 +212,6 @@ namespace AftershipAPI
         /// <returnsA List of Couriers objects that match the provided TrackingNumber
         public List<Courier> DetectCouriers(string TrackingNumber)
         {
-            // trackingJSON.Add("Slug",new JValue(_slug));
-
             if (TrackingNumber == null || TrackingNumber.Equals(""))
                 throw new ArgumentException("The tracking number should be always informed for the method detectCouriers");
 
@@ -265,21 +224,11 @@ namespace AftershipAPI
             {
                 { "tracking", tracking }
             };
+
             JObject response = Request("POST", "/couriers/detect", body.ToString());
-            List<Courier> couriers = new List<Courier>();
 
-            JArray couriersJSON = (JArray)response["data"]["couriers"];
-
-            for (int i = 0; i < couriersJSON.Count; i++)
-            {
-                JObject element = (JObject)couriersJSON[i];
-
-                Courier newCourier = new Courier(element);
-                couriers.Add(newCourier);
-            }
-            return couriers;
+            return ListOfCouriersFromJsonDataCouriers(response);
         }
-
 
         /// <summary>
         ///Get a list of matched couriers for a tracking number based on the tracking number format Note, only check the couriers you have defined in your account
@@ -296,9 +245,8 @@ namespace AftershipAPI
 
         public List<Courier> DetectCouriers(string TrackingNumber, string trackingPostalCode, string trackingShipDate,
             string trackingAccountNumber, List<string> slugs)
-        {
-            JObject body = new JObject();
-            JObject tracking = new JObject();
+        {            
+            var tracking = new JObject();
 
             if (TrackingNumber == null || TrackingNumber.Equals(""))
                 throw new ArgumentException("Tracking number should be always informed for the method detectCouriers");
@@ -317,22 +265,14 @@ namespace AftershipAPI
                 tracking.Add("Slug", slugsJSON);
             }
 
-            body.Add("tracking", tracking);
+            var body = new JObject
+            {
+                { "tracking", tracking }
+            };
 
             JObject response = Request("POST", "/couriers/detect", body.ToString());
-            List<Courier> couriers = new List<Courier>();
 
-            JArray couriersJSON = (JArray)response["data"]["couriers"];
-            JObject element;
-
-            for (int i = 0; i < couriersJSON.Count; i++)
-            {
-                element = (JObject)couriersJSON[i];
-
-                Courier newCourier = new Courier(element);
-                couriers.Add(newCourier);
-            }
-            return couriers;
+            return ListOfCouriersFromJsonDataCouriers(response);
         }
 
         /// <summary>
@@ -378,10 +318,9 @@ namespace AftershipAPI
         public bool DeleteTracking(Tracking tracking)
         {
             string parametersAll;
-            if (tracking.Id != null && !tracking.Id.Equals(""))
+            if (!string.IsNullOrEmpty(tracking.Id))
             {
                 parametersAll = tracking.Id;
-
             }
             else
             {
@@ -390,13 +329,9 @@ namespace AftershipAPI
             }
             JObject response = Request("DELETE", "/trackings/" + parametersAll, null);
 
-
-            if (Convert.ToInt32(response["meta"]["code"].ToString()) == 200)
-                return true;
-            else
-                return false;
-
+            return IsOKResponse(response);
         }
+
         /// <summary>
         /// Get a specific tracking from your account. If the trackingGet.Id property 
         /// is defined it will get that tracking from the system, if not it will take 
@@ -409,7 +344,7 @@ namespace AftershipAPI
         {
             string parametersExtra;
 
-            if (trackingGet.Id != null && !trackingGet.Id.Equals(""))
+            if (!string.IsNullOrEmpty(trackingGet.Id))
             {
                 parametersExtra = trackingGet.Id;
             }
@@ -421,9 +356,8 @@ namespace AftershipAPI
                     paramRequiredFields;
             }
             JObject response = Request("GET", "/trackings/" + parametersExtra, null);
-            JObject trackingJSON = (JObject)response["data"]["tracking"];
 
-            return (trackingJSON.Count != 0) ? new Tracking(trackingJSON) : null;
+            return TrackingFromResponse(response);
         }
 
         /// <summary>
@@ -445,12 +379,13 @@ namespace AftershipAPI
             if (fields != null)
                 qs.Add("fields", ParseListFieldTracking(fields));
 
-            if (lang != null && !lang.Equals("")) qs.Add("lang", lang);
+            if (!string.IsNullOrEmpty(lang))
+                qs.Add("lang", lang);
 
             //encode the fields required
             string params_query = ReplaceFirst(qs.ToString(), "&", "?");
 
-            if (trackingGet.Id != null && !trackingGet.Id.Equals(""))
+            if (!string.IsNullOrEmpty(trackingGet.Id))
             {
                 parametersAll = trackingGet.Id + params_query;
             }
@@ -463,6 +398,11 @@ namespace AftershipAPI
             }
 
             JObject response = Request("GET", "/trackings/" + parametersAll, null);
+            return TrackingFromResponse(response);
+        }
+
+        private static Tracking TrackingFromResponse(JObject response)
+        {
             JObject trackingJSON = (JObject)response["data"]["tracking"];
 
             return (trackingJSON.Count != 0) ? new Tracking(trackingJSON) : null;
@@ -479,27 +419,24 @@ namespace AftershipAPI
         /// 
         public JObject Request(string method, string urlResource, string body)
         {
-            // Console.WriteLine ("Start Request "+DateTime.Now);
-            string url = _url + VERSION_API + urlResource;
-
+            string url = $"{_url}{VERSION_API}{urlResource}";
 
             HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
 
             request.Timeout = 150000;
-            WebHeaderCollection header = new WebHeaderCollection
+
+            var header = new WebHeaderCollection
             {
                 { "aftership-api-key", _tokenAftership }
             };
+
             request.Headers = header;
             request.ContentType = "application/json";
             request.Method = method;
-            // Console.WriteLine(method+" Requesting the URL :"+ url);
 
             if (body != null)
             {
-                // Console.WriteLine ("body: " + body);
-                //is a POST or PUT  
-                using (StreamWriter streamWriter = new StreamWriter(request.GetRequestStream()))
+                using (var streamWriter = new StreamWriter(request.GetRequestStream()))
                 {
                     streamWriter.Write(body);
                     streamWriter.Flush();
@@ -518,14 +455,9 @@ namespace AftershipAPI
             try
             {
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                //                if(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created){
-                StreamReader reader = new StreamReader(response.GetResponseStream());
+
+                var reader = new StreamReader(response.GetResponseStream());
                 return reader.ReadToEnd();
-                //                }else if (response.StatusCode == HttpStatusCode.RequestTimeout){
-                //                    throw new TimeoutException();
-                //                }else{
-                //                    throw new WebException(response.StatusCode.ToString());
-                //                }
             }
             catch (WebException e)
             {
@@ -539,29 +471,21 @@ namespace AftershipAPI
                     //probably Aftership will give more information of the problem, so we read the response
                     HttpWebResponse response = e.Response as HttpWebResponse;
                     using (Stream stream = response.GetResponseStream())
-                    using (StreamReader reader = new StreamReader(stream))
+                    using (var reader = new StreamReader(stream))
                     {
                         string text = reader.ReadToEnd();
                         throw new WebException(text, e);
                     }
                 }
-
             }
             catch (Exception e)
             {
                 throw e;
             }
-            //            }finally{
-            //                Console.WriteLine ("Finish Request "+DateTime.Now);
-            //            }
         }
-
 
         /// Parse a List<FieldTracking> to List<String>
-        public List<string> ParseListFieldTracking(List<FieldTracking> list)
-        {
-            return list.Select(elemement => elemement.ToString()).ToList();
-        }
+        public List<string> ParseListFieldTracking(List<FieldTracking> list) => list.Select(elemement => elemement.ToString()).ToList();
 
         /// Replace first ocurrence from a String
         public string ReplaceFirst(string text, string search, string replace)
