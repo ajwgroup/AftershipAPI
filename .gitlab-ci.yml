@@ -38,10 +38,10 @@ dotnet_test:
   stage: test
   image: microsoft/dotnet:2.2-sdk
   script:
-    - dotnet test ${TEST_PATH}/${TEST_PATH}.csproj /p:CollectCoverage=true
+    - dotnet test ${TEST_PATH}/${TEST_PATH}.csproj /p:CollectCoverage=true /p:CoverletOutput='TestResults/result.json'
   artifacts:
     paths:
-      - TestResults/
+      - ${TEST_PATH}/TestResults/
   tags:
     - docker
   dependencies:
