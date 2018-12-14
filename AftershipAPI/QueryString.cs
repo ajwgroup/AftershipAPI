@@ -12,17 +12,11 @@ namespace AftershipAPI
 
         public Querystring() { }
 
-        public Querystring(string name, string value)
-        {
-            Encode(name, value);
-        }
+        public Querystring(string name, string value) => Encode(name, value);
 
         public void Add(string name, List<string> list)
         {
-            if(!string.IsNullOrEmpty(Query))
-                Query += "&";
-
-            Encode(name, string.Join(",", list.ToArray()));
+            Add(name, string.Join(",", list.ToArray()));
         }
 
         public void Add(string name, string value)
@@ -33,10 +27,7 @@ namespace AftershipAPI
             Encode(name, value);
         }
 
-        private void Encode(string name, string value)
-        {
-            Query += $"{Uri.EscapeDataString(name)}={Uri.EscapeDataString(value)}";
-        }
+        private void Encode(string name, string value) => Query += $"{Uri.EscapeDataString(name)}={Uri.EscapeDataString(value)}";
 
         public string GetQuery() => Query;
 
