@@ -12,8 +12,14 @@ namespace AftershipAPI
         public string Web_url { get; set; }
         public List<string> RequireFields { get; set; }
 
-
-        /** Default constructor with all the fields of the class */
+        /// <summary>
+        /// Default constructor with all the fields of the class
+        /// </summary>
+        /// <param name="web_url"></param>
+        /// <param name="slug"></param>
+        /// <param name="name"></param>
+        /// <param name="phone"></param>
+        /// <param name="other_name"></param>
         public Courier(string web_url, string slug, string name, string phone, string other_name)
         {
             Web_url = web_url;
@@ -23,15 +29,11 @@ namespace AftershipAPI
             Other_name = other_name;
         }
 
-        /**
-     * Constructor, creates a Courier from a JSONObject with the information of the Courier,
-     * if any field is not specified it will be ""
-     *
-     * @param jsonCourier   A JSONObject with information of the Courier
-     * by the API.
-     **/           // _trackingNumber = trackingJSON["tracking_number"]==null?null:(String)trackingJSON["tracking_number"];
-
-        
+        /// <summary>
+        ///  Constructor, creates a Courier from a JSONObject with the information of the Courier,
+        ///  if any field is not specified it will be ""
+        /// </summary>
+        /// <param name="jsonCourier">A JSONObject with information of the Courier by the API.</param>
         public Courier(JObject jsonCourier)
         {
             Web_url = jsonCourier["web_url"] == null ? null : (string)jsonCourier["web_url"];
@@ -61,7 +63,6 @@ namespace AftershipAPI
                 ", web_url='" + Web_url + '\'' +
                 '}';
         }
-
         
         public void AddRequireField(string requierField)
         {
