@@ -41,7 +41,7 @@ dotnet_test:
     - dotnet test ${TEST_PATH}/${TEST_PATH}.csproj /p:CollectCoverage=true
   artifacts:
     paths:
-      - coverage/
+      - TestResults/
   tags:
     - docker
   dependencies:
