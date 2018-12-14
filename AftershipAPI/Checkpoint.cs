@@ -43,7 +43,8 @@ namespace AftershipAPI
             CreatedAt = checkpointJSON["created_at"] == null ? DateTime.MinValue : (DateTime)checkpointJSON["created_at"];
             CheckpointTime = checkpointJSON["checkpoint_time"] == null ? null : (string)checkpointJSON["checkpoint_time"];
             City = checkpointJSON["city"] == null ? null : (string)checkpointJSON["city"];
-            CountryISO3 = checkpointJSON["country_iso3"] == null ? 0 : (ISO3Country)Enum.Parse(typeof(ISO3Country), (string)checkpointJSON["country_iso3"]);
+
+            CountryISO3 = (string)checkpointJSON["country_iso3"] == null ? 0 : (ISO3Country)Enum.Parse(typeof(ISO3Country), (string)checkpointJSON["country_iso3"]);
             CountryName = checkpointJSON["country_name"] == null ? null : (string)checkpointJSON["country_name"];
             Message = checkpointJSON["message"] == null ? null : (string)checkpointJSON["message"];
             State = checkpointJSON["state"] == null ? null : (string)checkpointJSON["state"];
