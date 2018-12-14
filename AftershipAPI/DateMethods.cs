@@ -5,8 +5,7 @@ namespace AftershipAPI
 {
     public class DateMethods
     {
-        private static string ISO8601Short = "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz";
-
+        private static readonly string ISO8601Short = "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz";
 
         public static string ToString(DateTime date)
         {
