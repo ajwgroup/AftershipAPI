@@ -42,24 +42,15 @@ namespace AftershipAPI
         /// <returns>The last Checkpoint object</returns>
         public Tracking PutTracking(Tracking tracking)
         {
-            string parametersExtra = ParametersExtra(tracking);
-
-            JObject response = Request("PUT", "/trackings/" + parametersExtra, tracking.GeneratePutJSON());
+            JObject response = Request("PUT", "/trackings/" + ParametersExtra(tracking), tracking.GeneratePutJSON());
 
             return new Tracking((JObject)response["data"]["tracking"]);
         }
 
         private string ParametersExtra(Tracking tracking)
         {
-            if (!string.IsNullOrEmpty(tracking.Id))
-            {
-                return tracking.Id;
-            }
-            else
-            {
-                string paramRequiredFields = tracking.GetQueryRequiredFields();
-                return tracking.Slug + "/" + tracking.TrackingNumber + paramRequiredFields;
-            }
+            string queryParameters = tracking.GetQueryRequiredFields();
+            return  (!string.IsNullOrEmpty(tracking.Id)) ? tracking.Id : $"{tracking.Slug}/{tracking.TrackingNumber}{queryParameters}";            
         }
 
         /// <summary>
@@ -90,7 +81,7 @@ namespace AftershipAPI
         {
             var qs = new Querystring();
 
-            if (fields != null) qs.Add("fields", string.Join(",", fields));
+            if (fields != null && fields.Any()) qs.Add("fields", string.Join(",", fields));
             if (!string.IsNullOrEmpty(lang)) qs.Add("lang", lang);
 
             string parameters = qs.ToString();
@@ -218,12 +209,13 @@ namespace AftershipAPI
         public List<Courier> DetectCouriers(string trackingNumber, string trackingPostalCode, string trackingShipDate,
             string trackingAccountNumber, List<string> slugs)
         {
-            var tracking = new JObject();
-
             if (string.IsNullOrEmpty(trackingNumber))
                 throw new ArgumentException("Tracking number should always be provided to the method detectCouriers");
 
-            tracking.Add("tracking_number", new JValue(trackingNumber));
+            var tracking = new JObject()
+            {
+                { "tracking_number", new JValue(trackingNumber) }
+            };
 
             if (!string.IsNullOrEmpty(trackingPostalCode))
                 tracking.Add("tracking_postal_code", new JValue(trackingPostalCode));
@@ -234,7 +226,7 @@ namespace AftershipAPI
             if (!string.IsNullOrEmpty(trackingAccountNumber))
                 tracking.Add("tracking_account_number", new JValue(trackingAccountNumber));
 
-            if (slugs != null && slugs.Count != 0)
+            if (slugs != null && slugs.Any())
                 tracking.Add("Slug", new JArray(slugs));
 
             var body = new JObject
@@ -248,10 +240,10 @@ namespace AftershipAPI
         }
 
         /// <summary>
-        ///Get next page of Trackings from your account with the ParametersTracking defined in the params
+        /// Get next page of Trackings from your account with the ParametersTracking defined in the params
         /// </summary>
-        /// <param name="parameters"> ParametersTracking Object, with the information to get
-        /// <returns> The next page of Tracking Objects from your account
+        /// <param name="parameters"></param>
+        /// <returns>The next page of Tracking Objects from your account</returns>
         public List<Tracking> GetTrackingsNext(ParametersTracking parameters)
         {
             parameters.Page = parameters.Page + 1;
@@ -343,7 +335,7 @@ namespace AftershipAPI
 
             var qs = new Querystring();
 
-            if (fields != null)
+            if (fields.Any())
                 qs.Add("fields", ParseListFieldTracking(fields));
 
             if (!string.IsNullOrEmpty(lang))
@@ -404,9 +396,7 @@ namespace AftershipAPI
             if (body != null)
             {
                 using (var streamWriter = new StreamWriter(request.GetRequestStream()))
-                {
                     streamWriter.Write(body);
-                }
             }
 
             string json_response = JsonResponseFromWebResponse(request);
