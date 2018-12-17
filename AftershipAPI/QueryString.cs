@@ -21,11 +21,12 @@ namespace AftershipAPI
 
         public void Add(string name, string value)
         {
-            if (!string.IsNullOrEmpty(Query))
-                Query += "&";
+            Query += NewQueryOrAdd(Query);
 
             Encode(name, value);
         }
+
+        private string NewQueryOrAdd(string query) => string.IsNullOrEmpty(query) ? "?" : "&";
 
         private void Encode(string name, string value) => Query += $"{Uri.EscapeDataString(name)}={Uri.EscapeDataString(value)}";
 

@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AftershipAPI
 {
@@ -19,11 +20,11 @@ namespace AftershipAPI
         public string Slug { get; set; }
 
         /// Email address(es) to receive email notifications. Use comma for multiple emails. 
-        public List<string> Emails { get; set; }
+        public List<string> Emails { get; set; } = new List<string>();
 
         /// Phone number(s) to receive sms notifications. Use comma for multiple emails.
         ///Enter + area code before phone number. 
-        public List<string> Smses { get; set; }
+        public List<string> Smses { get; set; } = new List<string>();
 
         /// Title of the tracking. Default value as trackingNumber 
         public string Title { get; set; }
@@ -46,7 +47,7 @@ namespace AftershipAPI
         public string OrderIDPath { get; set; }
 
         /// Custom fields that accept any TEXT STRING
-        public Dictionary<string, string> CustomFields { get; set; }
+        public Dictionary<string, string> CustomFields { get; set; } = new Dictionary<string, string>();
 
         /// fields informed by Aftership API
 
@@ -82,7 +83,7 @@ namespace AftershipAPI
         public StatusTag Tag { get; set; }
 
         /// Array of Hash describes the checkpoint information. 
-        public List<Checkpoint> Checkpoints { get; set; }
+        public List<Checkpoint> Checkpoints { get; set; } = new List<Checkpoint>();
 
         ///Tracking Account number tracking_account_number
         public string TrackingAccountNumber { get; set; }
@@ -93,6 +94,17 @@ namespace AftershipAPI
         ///Tracking ship date tracking_ship_date
         public string TrackingShipDate { get; set; }
 
+        public void AddEmails(string emails) => Emails.Add(emails);
+
+        public void DeleteEmail(string email) => Emails.Remove(email);
+
+        public void AddSmses(string smses) => Smses.Add(smses);
+
+        public void DeleteSmes(string smses) => Smses.Remove(smses);
+
+        public void AddCustomFields(string field, string value) => CustomFields.Add(field, value);
+
+        public void DeleteCustomFields(string field) => CustomFields.Remove(field);
 
         public Tracking(string trackingNumber)
         {
@@ -126,44 +138,26 @@ namespace AftershipAPI
 
             JArray smsesArray = trackingJSON["smses"] == null ? null : (JArray)trackingJSON["smses"];
             if (smsesArray != null && smsesArray.Count != 0)
-            {
-                Smses = new List<string>();
-                for (int i = 0; i < smsesArray.Count; i++)
-                {
-                    Smses.Add((string)smsesArray[i]);
-                }
-            }
+                Smses.AddRange(smsesArray.Select(smses => (string)smses));
 
             JArray emailsArray = trackingJSON["emails"] == null ? null : (JArray)trackingJSON["emails"];
             if (emailsArray != null && emailsArray.Count != 0)
-            {
-                Emails = new List<string>();
-                for (int i = 0; i < emailsArray.Count; i++)
-                {
-                    Emails.Add((string)emailsArray[i]);
-                }
-            }
+                Emails.AddRange(emailsArray.Select(email => (string)email));
 
             JObject customFieldsJSON = trackingJSON["custom_fields"] == null || !trackingJSON["custom_fields"].HasValues ? null :
                 (JObject)trackingJSON["custom_fields"];
 
             if (customFieldsJSON != null)
             {
-                CustomFields = new Dictionary<string, string>();
-                IEnumerable<JProperty> keys = customFieldsJSON.Properties();
-                foreach (JProperty item in keys)
-                {
-                    CustomFields.Add(item.Name, (string)customFieldsJSON[item.Name]);
-                }
+                List<JProperty> keys = customFieldsJSON.Properties().ToList();
+                keys.ForEach(item => CustomFields.Add(item.Name, (string)customFieldsJSON[item.Name]));
             }
 
             //fields that can't be updated by the user, only retrieve
             CreatedAt = trackingJSON["created_at"] == null ? DateTime.MinValue : (DateTime)trackingJSON["created_at"];
             UpdatedAt = trackingJSON["updated_at"] == null ? DateTime.MinValue : (DateTime)trackingJSON["updated_at"];
             ExpectedDelivery = trackingJSON["expected_delivery"] == null ? null : (string)trackingJSON["expected_delivery"];
-
             Active = trackingJSON["active"] == null ? false : (bool)trackingJSON["active"];
-
             string origin_country_iso3 = (string)trackingJSON["origin_country_iso3"];
 
             if (!string.IsNullOrEmpty(origin_country_iso3))
@@ -171,6 +165,7 @@ namespace AftershipAPI
 
             ShipmentPackageCount = trackingJSON["shipment_package_count"] == null ? 0 :
                 (int)trackingJSON["shipment_package_count"];
+
             ShipmentType = trackingJSON["shipment_type"] == null ? null : (string)trackingJSON["shipment_type"];
             SignedBy = trackingJSON["singned_by"] == null ? null : (string)trackingJSON["signed_by"];
             Source = trackingJSON["source"] == null ? null : (string)trackingJSON["source"];
@@ -181,119 +176,31 @@ namespace AftershipAPI
 
             // checkpoints
             JArray checkpointsArray = trackingJSON["checkpoints"] == null ? null : (JArray)trackingJSON["checkpoints"];
-
             if (checkpointsArray != null && checkpointsArray.Count != 0)
-            {
-                Checkpoints = new List<Checkpoint>();
-
-                for (int i = 0; i < checkpointsArray.Count; i++)
-                {
-                    Checkpoints.Add(new Checkpoint((JObject)checkpointsArray[i]));
-                }
-            }
+                Checkpoints = checkpointsArray.Select(checkpoint => new Checkpoint((JObject)checkpoint)).ToList();
         }
-       
-        public void AddEmails(string emails)
-        {
-            if (Emails == null)
-            {
-                Emails = new List<string>
-                {
-                    emails
-                };
-            }
-            else
-            {
-                Emails.Add(emails);
-            }
-        }
-
-        public void DeleteEmail(string email)
-        {
-            if (Emails != null)
-                Emails.Remove(email);
-        }
-        
-
-        public void AddSmses(string smses)
-        {
-            if (Smses == null)
-            {
-                Smses = new List<string>
-                {
-                    smses
-                };
-            }
-            else
-            {
-                Smses.Add(smses);
-            }
-        }
-
-        public void DeleteSmes(string smses)
-        {
-            if (Smses != null)
-                Smses.Remove(smses);
-        }
-
-      
-        public void AddCustomFields(string field, string value)
-        {
-            if (CustomFields == null)
-            {
-                CustomFields = new Dictionary<string, string>();
-            }
-            CustomFields.Add(field, value);
-        }
-
-        public void DeleteCustomFields(string field)
-        {
-            if (CustomFields != null)
-                CustomFields.Remove(field);
-        }       
 
         public string GetJSONPost()
-        {            
+        {
             var trackingJSON = new JObject
             {
                 { "tracking_number", new JValue(TrackingNumber) }
             };
 
             if (Slug != null) trackingJSON.Add("slug", new JValue(Slug));
-
             if (Title != null) trackingJSON.Add("title", new JValue(Title));
-            if (Emails != null)
-            {
-                JArray emailsJSON = new JArray(Emails);
-                trackingJSON["emails"] = emailsJSON;
-            }
-            if (Smses != null)
-            {
-                JArray smsesJSON = new JArray(Smses);
-                trackingJSON["smses"] = smsesJSON;
-            }
+            if (Emails.Any()) trackingJSON["emails"] = new JArray(Emails);
+            if (Smses.Any()) trackingJSON["smses"] = new JArray(Smses);
             if (CustomerName != null) trackingJSON.Add("customer_name", new JValue(CustomerName));
-            if (DestinationCountryISO3 != 0)
-                trackingJSON.Add("destination_country_iso3", new JValue(DestinationCountryISO3.ToString()));
+            if (DestinationCountryISO3 != 0) trackingJSON.Add("destination_country_iso3", new JValue(DestinationCountryISO3.ToString()));
             if (OrderID != null) trackingJSON.Add("order_id", new JValue(OrderID));
             if (OrderIDPath != null) trackingJSON.Add("order_id_path", new JValue(OrderIDPath));
-
             if (TrackingAccountNumber != null) trackingJSON.Add("tracking_account_number", new JValue(TrackingAccountNumber));
             if (TrackingPostalCode != null) trackingJSON.Add("tracking_postal_code", new JValue(TrackingPostalCode));
             if (TrackingShipDate != null) trackingJSON.Add("tracking_ship_date", new JValue(TrackingShipDate));
+            if (CustomFields.Any()) trackingJSON["custom_fields"] = JObject.FromObject(CustomFields);
 
-            if (CustomFields != null)
-            {
-                JObject customFieldsJSON = new JObject();
-                foreach (KeyValuePair<string, string> pair in CustomFields)
-                {
-                    customFieldsJSON.Add(pair.Key, new JValue(pair.Value));
-                }
-
-                trackingJSON["custom_fields"] = customFieldsJSON;
-            }
-
-            JObject globalJSON = new JObject
+            var globalJSON = new JObject
             {
                 ["tracking"] = trackingJSON
             };
@@ -302,35 +209,15 @@ namespace AftershipAPI
         }
 
         public string GeneratePutJSON()
-        {            
+        {
             var trackingJSON = new JObject();
-
             if (Title != null) trackingJSON.Add("title", new JValue(Title));
-            if (Emails != null)
-            {
-                JArray emailsJSON = new JArray(Emails);
-                trackingJSON["emails"] = emailsJSON;
-            }
-            if (Smses != null)
-            {
-                JArray smsesJSON = new JArray(Smses);
-                trackingJSON["smses"] = smsesJSON;
-            }
+            if (Emails.Any()) trackingJSON["emails"] = new JArray(Emails);
+            if (Smses.Any()) trackingJSON["smses"] = new JArray(Smses);
             if (CustomerName != null) trackingJSON.Add("customer_name", new JValue(CustomerName));
             if (OrderID != null) trackingJSON.Add("order_id", new JValue(OrderID));
             if (OrderIDPath != null) trackingJSON.Add("order_id_path", new JValue(OrderIDPath));
-            
-
-            if (CustomFields != null)
-            {
-                var customFieldsJSON = new JObject();
-
-                foreach (KeyValuePair<string, string> pair in CustomFields)
-                {
-                    customFieldsJSON.Add(pair.Key, new JValue(pair.Value));
-                }
-                trackingJSON["custom_fields"] = customFieldsJSON;
-            }
+            if (CustomFields.Any()) trackingJSON["custom_fields"] = JObject.FromObject(CustomFields);
 
             var globalJSON = new JObject
             {
