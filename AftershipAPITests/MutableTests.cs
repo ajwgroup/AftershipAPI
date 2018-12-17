@@ -9,6 +9,10 @@ namespace AftershipAPITests
     [TestClass]
     public class MutableTests
     {
+        /// <summary>
+        /// Tests that use up API Requests
+        /// </summary>
+
         ConnectionAPI connection;
 
         Tracking NewTracking;
@@ -42,7 +46,7 @@ namespace AftershipAPITests
                 if (tracking != null)
                     connection.DeleteTracking(checkTracking);
             }
-            catch {}
+            catch { }
         }
 
         [TestMethod]
@@ -88,8 +92,8 @@ namespace AftershipAPITests
             var result = connection.CreateTracking(NewTrackingWithSlug);
 
             result.TrackingNumber.Should().Be(NewTrackingWithSlug.TrackingNumber);
-        }        
-        
+        }
+
         [TestMethod]
         public void DeleteTracking_TrackingIsDeleted()
         {
