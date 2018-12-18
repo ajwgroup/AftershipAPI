@@ -47,18 +47,18 @@ dotnet_test:
   dependencies:
   - dotnet_build
 
-pages:
-  stage: deploy
-  dependencies:
-    - dotnet_test
-  script:
-    - mv ${TEST_PATH}/TestResults/ public/
-  artifacts:
-    paths:
-      - public
-    expire_in: 30 days
-  only:
-    - master
+# pages:
+#   stage: deploy
+#   dependencies:
+#     - dotnet_test
+#   script:
+#     - mv ${TEST_PATH}/TestResults/ public/
+#   artifacts:
+#     paths:
+#       - public
+#     expire_in: 30 days
+#   only:
+#     - master
 
 push_nuget_pre_release:
   only:
