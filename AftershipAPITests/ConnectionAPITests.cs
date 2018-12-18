@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Net;
 
 namespace AftershipAPITests
@@ -20,6 +19,7 @@ namespace AftershipAPITests
         {
             var config = new ConfigurationBuilder()
               .AddJsonFile("appsettings.json")
+              .AddEnvironmentVariables()
               .Build();
 
             connection = new ConnectionAPI(config["AftershipApiKey"]);

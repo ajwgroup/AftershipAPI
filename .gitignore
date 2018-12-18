@@ -7,7 +7,7 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-/AftershipAPITests/appsettings.Development.json
+/AftershipAPITests/appsettings.json
 
 # User-specific files
 *.rsuser
