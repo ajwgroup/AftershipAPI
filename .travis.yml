@@ -14,6 +14,6 @@ after_failure:
 deploy:
   skip_cleanup: true
   provider: script
-  script: chmod +x ./deploy/deploy.sh && bash ./deploy/deploy.sh $NUGET_API_KEY
+  script: chmod +x ./deploy/deploy.sh && ./deploy/deploy.sh $NUGET_API_KEY
   on:
     branch: master
