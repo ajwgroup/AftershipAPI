@@ -5,7 +5,7 @@ dotnet: 2.2
 install:
 - dotnet restore
 script:
-- echo you the man now dog
+- dotnet test
 after_success:
 - echo dotnet test succeeded
 after_failure:
