@@ -12,12 +12,8 @@ after_success:
 after_failure:
 - echo dotnet test failed
 deploy:
-  - provider: NuGet
-    api_key:
-      secure $NUGET_API_KEY
-# deploy:
-#   skip_cleanup: true
-#   provider: script
-#   script: chmod +x ./deploy/deploy.sh && ./deploy/deploy.sh $NUGET_API_KEY
-#   on:
-#     branch: master
+  skip_cleanup: true
+  provider: script
+  script: chmod +x ./deploy/deploy.sh && ./deploy/deploy.sh $NUGET_API_KEY
+  on:
+    branch: master
