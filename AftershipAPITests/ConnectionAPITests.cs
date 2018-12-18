@@ -19,7 +19,6 @@ namespace AftershipAPITests
         {
             var config = new ConfigurationBuilder()
               .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-              .AddJsonFile("appsettings.Development.json", optional: true)
               .AddEnvironmentVariables()
               .Build();
 

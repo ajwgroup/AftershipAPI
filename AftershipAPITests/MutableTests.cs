@@ -29,8 +29,9 @@ namespace AftershipAPITests
              .AddEnvironmentVariables()
              .Build();
 
-            connection = new ConnectionAPI(config["AftershipApiKey"]);
+          
 
+            connection = new ConnectionAPI(config["AftershipApiKey"]);
         }
 
         private void CreateTrackingIfNotExist(string trackingNumber, string slug)
