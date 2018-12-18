@@ -1,8 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <IsPackable>true</IsPackable>
+    <PackageId>AftershipAPI</PackageId>
+    <Authors>Adam Worley</Authors>
+    <Company>AJW Aviation</Company>
+    <PackageProjectUrl>https://github.com/ajwgroup/AftershipAPI</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/ajwgroup/AftershipAPI/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageTags>Aftership api ajw</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
