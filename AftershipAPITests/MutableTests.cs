@@ -1,6 +1,7 @@
 ﻿using AftershipAPI;
 using AftershipAPI.Enums;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
@@ -23,7 +24,12 @@ namespace AftershipAPITests
         [TestInitialize]
         public void SetUp()
         {
-            connection = new ConnectionAPI(Environment.GetEnvironmentVariable("AftershipApiKey"));
+            var config = new ConfigurationBuilder()
+              .AddJsonFile("appsettings.json")
+              .Build();
+
+            connection = new ConnectionAPI(config["AftershipApiKey"]);
+
         }
 
         private void CreateTrackingIfNotExist(string trackingNumber, string slug)

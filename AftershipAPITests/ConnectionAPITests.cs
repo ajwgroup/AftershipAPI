@@ -1,9 +1,11 @@
 ﻿using AftershipAPI;
 using AftershipAPI.Enums;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Net;
 
 namespace AftershipAPITests
@@ -16,7 +18,13 @@ namespace AftershipAPITests
         [TestInitialize]
         public void Setup()
         {
-            connection = new ConnectionAPI(Environment.GetEnvironmentVariable("AftershipApiKey"));
+            var config = new ConfigurationBuilder()
+              .AddJsonFile("appsettings.json")
+              .Build();
+
+            connection = new ConnectionAPI(config["AftershipApiKey"]);
+
+            Console.WriteLine(connection);
         }
 
         [TestMethod]
