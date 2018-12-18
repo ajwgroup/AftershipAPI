@@ -1,7 +1,10 @@
 {
   "profiles": {
     "AftershipAPITests": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "environmentVariables": {
+        "Key": "test"
+      }
     }
   }
 }
