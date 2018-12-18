@@ -16,7 +16,7 @@ namespace AftershipAPITests
         [TestInitialize]
         public void Setup()
         {
-            connection = new ConnectionAPI("0f5b6b47-dc92-49f3-9534-defbaaf55c1b");
+            connection = new ConnectionAPI(Environment.GetEnvironmentVariable("AftershipApiKey"));
         }
 
         [TestMethod]

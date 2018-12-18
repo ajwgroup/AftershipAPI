@@ -23,7 +23,7 @@ namespace AftershipAPITests
         [TestInitialize]
         public void SetUp()
         {
-            connection = new ConnectionAPI(tokenAfthership: "0f5b6b47-dc92-49f3-9534-defbaaf55c1b");
+            connection = new ConnectionAPI(Environment.GetEnvironmentVariable("AftershipApiKey"));
         }
 
         private void CreateTrackingIfNotExist(string trackingNumber, string slug)
