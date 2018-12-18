@@ -1,15 +1,13 @@
-#!/bin/bash
-
 ApiKey=$1
 ts=$(date +"%y%m%d%H%M")
 
 set
 
-ls
+# ls
 
-/bin/ls AftershipAPI/
+# /bin/ls AftershipAPI/
 
-/bin/ls /home/travis/build/ajwgroup/AftershipAPI/
+# /bin/ls /home/travis/build/ajwgroup/AftershipAPI/
 
 echo "Starting pack"
 dotnet pack AftershipAPI/AftershipAPI.csproj /p:PackageVersion=1.0.$ts --configuration Release
