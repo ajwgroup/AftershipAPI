@@ -25,8 +25,9 @@ namespace AftershipAPITests
         public void SetUp()
         {
             var config = new ConfigurationBuilder()
-              .AddJsonFile("appsettings.json")
-              .Build();
+             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+             .AddEnvironmentVariables()
+             .Build();
 
             connection = new ConnectionAPI(config["AftershipApiKey"]);
 
