@@ -6,8 +6,8 @@
     <Authors>Adam Worley</Authors>
     <Company>AJW Aviation</Company>
     <PackageProjectUrl>https://github.com/ajwgroup/AftershipAPI</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/ajwgroup/AftershipAPI/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageTags>Aftership api ajw</PackageTags>
+    <PackageLicense>https://github.com/ajwgroup/AftershipAPI/blob/master/LICENSE</PackageLicense>
+    <PackageTags>Aftership api AJW</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
