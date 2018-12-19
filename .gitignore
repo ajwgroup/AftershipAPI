@@ -7,7 +7,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-/AftershipAPITests/appsettings.json
+# Cake output files
+artifacts/
+tools/
+log.txt
 
 appsettings.json
 
@@ -346,3 +349,5 @@ ASALocalRun/
 .localhistory/
 
 # End of https://www.gitignore.io/api/visualstudio
+AftershipAPITests/appsettings.json
+AftershipAPI/log.txt
