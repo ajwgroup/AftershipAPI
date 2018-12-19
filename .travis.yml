@@ -11,8 +11,13 @@ after_success:
 after_failure:
 - echo dotnet test failed
 deploy:
-  skip_cleanup: true
-  provider: script
-  script: chmod +x ./deploy/deploy.sh && ./deploy/deploy.sh $NUGET_API_KEY
-  on:
-    branch: master
+  - provider: script
+    skip_cleanup: true
+    script: chmod +x ./deploy/deploy.sh && ./deploy/deploy.sh $NUGET_API_KEY
+  - provider: pages
+    skip-cleanup: true
+    github-token: $GITHUB_TOKEN
+    local-dir: ./AftershipAPI/_site
+    keep-history: true
+on:
+  branch: master

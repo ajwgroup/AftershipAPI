@@ -7,10 +7,15 @@
     <Company>AJW Aviation</Company>
     <PackageProjectUrl>https://github.com/ajwgroup/AftershipAPI</PackageProjectUrl>
     <PackageLicense>https://github.com/ajwgroup/AftershipAPI/blob/master/LICENSE</PackageLicense>
-    <PackageTags>Aftership api AJW</PackageTags>
+    <PackageTags>Aftership API AJW Track Tracking Courier Couriers</PackageTags>
+    <Description>.NET core 2.2 package for the Aftership API</Description>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="docfx.console" Version="2.40.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
 
