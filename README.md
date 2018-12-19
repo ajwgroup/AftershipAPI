@@ -5,6 +5,8 @@
 [![Issues](https://img.shields.io/github/issues/ajwgroup/AftershipAPI.svg?style=flat-square)](https://github.com/ajwgroup/AftershipAPI/issues)
 ![Latest Nuget Release](https://img.shields.io/nuget/v/AftershipAPI.svg?style=flat-square&link=http://www.nuget.org/packages/AftershipAPI/&link=http://www.nuget.org/packages/AftershipAPI/)
 [![Latest Nuget Pre-Release](https://img.shields.io/nuget/vpre/AftershipAPI.svg?style=flat-square&colorB=yellow&label=nuget-prerelease)](https://www.nuget.org/packages/AftershipAPI/)
+[![Coverage Status](https://img.shields.io/coveralls/github/ajwgroup/AftershipAPI.svg?style=flat-square)](https://coveralls.io/github/ajwgroup/AftershipAPI)
+[![Last commit](https://img.shields.io/github/last-commit/ajwgroup/AftershipAPI.svg?style=flat-square)](https://github.com/ajwgroup/AftershipAPI)
 
 This is an unofficial Aftership SDK for .NET Core version 2.2.
 
