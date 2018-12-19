@@ -2,8 +2,16 @@ language: csharp
 dist: xenial
 mono: none
 dotnet: 2.2
+branches:
+  only:
+    - master
+env:
+  global:
+    - DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+    - DOTNET_CLI_TELEMETRY_OPTOUT=1
 install:
 - dotnet restore
+- dotnet tool install -g Cake.Tool --version 0.30.0
 script:
 - dotnet test
 after_success:
@@ -11,8 +19,31 @@ after_success:
 after_failure:
 - echo dotnet test failed
 deploy:
-  skip_cleanup: true
-  provider: script
-  script: chmod +x ./deploy/deploy.sh && ./deploy/deploy.sh $NUGET_API_KEY
-  on:
-    branch: master
+  - provider: script
+    skip_cleanup: true
+    script: dotnet cake build.cake
+
+    # script: chmod +x ./build.sh && ./build.sh --target "BuildAndTest" --currentBranch=$TRAVIS_BRANCH
+
+# dist: xenial
+# mono: none
+# dotnet: 2.2
+# install:
+# - dotnet restore
+# script:
+# - dotnet test
+# after_success:
+# - echo dotnet test succeeded
+# after_failure:
+# - echo dotnet test failed
+# deploy:
+#   - provider: script
+#     skip_cleanup: true
+#     script: chmod +x ./deploy/deploy.sh && ./deploy/deploy.sh $NUGET_API_KEY
+#   - provider: pages
+#     skip-cleanup: true
+#     github-token: $GITHUB_TOKEN
+#     local-dir: ./AftershipAPI/_site
+#     keep-history: true
+# on:
+#   branch: master

@@ -9,7 +9,7 @@ using System.Net;
 namespace AftershipAPI
 {
     /// <summary>
-    /// Connection API. Connect with the API of Afthership
+    /// Connection API. Connect with the API of Aftership
     /// </summary>
     public class ConnectionAPI
     {
