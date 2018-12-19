@@ -9,7 +9,21 @@ env:
   global:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
     - DOTNET_CLI_TELEMETRY_OPTOUT=1
-script: chmod +x ./build.sh && ./build.sh --target "BuildAndTest" --currentBranch=$TRAVIS_BRANCH
+install:
+- dotnet restore
+script:
+- dotnet test
+after_success:
+- echo dotnet test succeeded
+- dotnet tool install -g Cake.Tool --version 0.30.0
+after_failure:
+- echo dotnet test failed
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: dotnet cake build.cake
+
+    # script: chmod +x ./build.sh && ./build.sh --target "BuildAndTest" --currentBranch=$TRAVIS_BRANCH
 
 # dist: xenial
 # mono: none
