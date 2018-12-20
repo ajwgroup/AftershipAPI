@@ -1,7 +1,8 @@
 #addin Cake.Coveralls
 #tool coveralls.io
 #addin Cake.Git
-#addin nuget:?package=Nuget.Core
+
+// #addin nuget:?package=Nuget.Core
 
 // #tool "nuget:?package=coveralls.io&version=1.4.2"
 // #addin "nuget:?package=Cake.Coveralls&version=0.9.0"
