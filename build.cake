@@ -1,13 +1,6 @@
-#addin Cake.Coveralls
-#tool coveralls.io
+#tool "nuget:?package=coveralls.io&version=1.4.2"
 #addin Cake.Git
-
-#addin nuget:?package=Nuget.Core
-
-// #tool "nuget:?package=coveralls.io&version=1.4.2"
-// #addin "nuget:?package=Cake.Coveralls&version=0.9.0"
-
-using NuGet;
+#addin "nuget:?package=Cake.Coveralls&version=0.9.0"
 
 
 //////////////////////////////////////////////////////
@@ -112,15 +105,8 @@ Task("Publish")
         var pkgs = GetFiles(artifactsDir + "*.nupkg");
         foreach(var pkg in pkgs)
         {
-            if(!IsNuGetPublished(pkg))
-            {
-                Information($"Publishing \"{pkg}\".");
-                DotNetCoreNuGetPush(pkg.FullPath, pushSettings);
-            }
-            else {
-                Information($"Bypassing publishing \"{pkg}\" as it is already published.");
-            }
-
+            Information($"Publishing \"{pkg}\".");
+            DotNetCoreNuGetPush(pkg.FullPath, pushSettings);
         }
     });
 
@@ -160,22 +146,3 @@ Task("Default")
 
 
 RunTarget(target);
-
-
-//////////////////////////////////////////////////////
-//                      HELPERS                     //
-//////////////////////////////////////////////////////
-
-private bool IsNuGetPublished(FilePath packagePath) {
-    var package = new ZipPackage(packagePath.FullPath);
-
-    var latestPublishedVersions = NuGetList(
-        package.Id,
-        new NuGetListSettings
-        {
-            Prerelease = true
-        }
-    );
-
-    return latestPublishedVersions.Any(p => package.Version.Equals(new SemanticVersion(p.Version)));
-}
