@@ -1,6 +1,5 @@
 
 language: csharp
-mono: none
 matrix:
   include:
     - os: linux
