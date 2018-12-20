@@ -83,7 +83,7 @@ Task("UploadCoverage")
     .IsDependentOn("Test")
     .Does(() =>
     {
-        CoverallsIo(artifactsDir + coverageResultsFileName, CoverallsNetReportType.DynamicCodeCoverage,  new CoverallsIoSettings()
+        CoverallsIo(artifactsDir + coverageResultsFileName, new CoverallsIoSettings()
         {
             Debug = true,
             RepoToken = coverallsToken
