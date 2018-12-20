@@ -23,5 +23,5 @@ env:
 dotnet: 2.2
 mono: none
 script:
-  - chmod +x ./build.sh && ./build.sh --target="CompleteWithoutPublish" --currentBranch=$TRAVIS_BRANCH --projectName=$PROJECT_NAME
+  - chmod +x ./build.sh && ./build.sh --target "CompleteWithoutPublish" --currentBranch=$TRAVIS_BRANCH --projectName=$PROJECT_NAME
   # - sonar-scanner
