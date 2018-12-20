@@ -71,41 +71,43 @@ if [ ! -f "$PACKAGES_CONFIG_MD5" ] || [ "$( cat "$PACKAGES_CONFIG_MD5" | sed 's/
     find . -type d ! -name . ! -name 'Cake.Bakery' | xargs rm -rf
 fi
 
-dotnet "$NUGET_EXE" install -ExcludeVersion
-if [ $? -ne 0 ]; then
-    echo "Could not restore NuGet tools."
-    exit 1
-fi
+# dotnet "$NUGET_EXE" install -ExcludeVersion
+# if [ $? -ne 0 ]; then
+#     echo "Could not restore NuGet tools."
+#     exit 1
+# fi
 
-$MD5_EXE "$PACKAGES_CONFIG" | awk '{ print $1 }' >| "$PACKAGES_CONFIG_MD5"
+# $MD5_EXE "$PACKAGES_CONFIG" | awk '{ print $1 }' >| "$PACKAGES_CONFIG_MD5"
 
-popd >/dev/null
+# popd >/dev/null
 
 # Restore addins from NuGet.
-if [ -f "$ADDINS_PACKAGES_CONFIG" ]; then
-    pushd "$ADDINS_DIR" >/dev/null
+# if [ -f "$ADDINS_PACKAGES_CONFIG" ]; then
+#     pushd "$ADDINS_DIR" >/dev/null
 
-    dotnet "$NUGET_EXE" install -ExcludeVersion
-    if [ $? -ne 0 ]; then
-        echo "Could not restore NuGet addins."
-        exit 1
-    fi
+#     dotnet "$NUGET_EXE" install -ExcludeVersion
+#     if [ $? -ne 0 ]; then
+#         echo "Could not restore NuGet addins."
+#         exit 1
+#     fi
 
-    popd >/dev/null
-fi
+#     popd >/dev/null
+# fi
 
 # Restore modules from NuGet.
-if [ -f "$MODULES_PACKAGES_CONFIG" ]; then
-    pushd "$MODULES_DIR" >/dev/null
+# if [ -f "$MODULES_PACKAGES_CONFIG" ]; then
+#     pushd "$MODULES_DIR" >/dev/null
 
-    dotnet "$NUGET_EXE" install -ExcludeVersion
-    if [ $? -ne 0 ]; then
-        echo "Could not restore NuGet modules."
-        exit 1
-    fi
+#     dotnet "$NUGET_EXE" install -ExcludeVersion
+#     if [ $? -ne 0 ]; then
+#         echo "Could not restore NuGet modules."
+#         exit 1
+#     fi
 
-    popd >/dev/null
-fi
+#     popd >/dev/null
+# fi
+
+exec dotnet restore
 
 # Make sure that Cake has been installed.
 if [ ! -f "$CAKE_EXE" ]; then
