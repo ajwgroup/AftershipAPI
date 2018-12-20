@@ -1,7 +1,10 @@
-#tool "nuget:?package=coveralls.io&version=1.4.2"
+#addin Cake.Coveralls
+#tool coveralls.io
 #addin Cake.Git
 #addin nuget:?package=Nuget.Core
-#addin "nuget:?package=Cake.Coveralls&version=0.9.0"
+
+// #tool "nuget:?package=coveralls.io&version=1.4.2"
+// #addin "nuget:?package=Cake.Coveralls&version=0.9.0"
 
 using NuGet;
 
@@ -12,10 +15,11 @@ using NuGet;
 
 var target = Argument("target", "Default");
 var artifactsDir = "./artifacts/";
-var solutionPath = "AftershipAPI.sln";
-var project = "./AftershipAPI/AftershipAPI.csproj";
-var testFolder = "./AftershipAPITests/";
-var testProject = testFolder + "AftershipAPITests.csproj";
+var projectName = Argument<string>("projectName", null);
+var solutionPath = "projectName.sln";
+var project = "./projectName/projectName.csproj";
+var testFolder = "./projectNameTests/";
+var testProject = testFolder + "projectNameTests.csproj";
 var coverageResultsFileName = "coverage.xml";
 var currentBranch = Argument<string>("currentBranch", GitBranchCurrent("./").FriendlyName);
 var isReleaseBuild = string.Equals(currentBranch, "master", StringComparison.OrdinalIgnoreCase);
