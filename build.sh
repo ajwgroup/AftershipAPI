@@ -106,7 +106,7 @@ fi
 
 #     popd >/dev/null
 # fi
-
+echo "dotnet restore"
 exec dotnet restore
 
 # Make sure that Cake has been installed.
@@ -114,6 +114,9 @@ if [ ! -f "$CAKE_EXE" ]; then
     echo "Could not find Cake.exe at '$CAKE_EXE'."
     exit 1
 fi
+
+echo "Cake args"
+echo "${CAKE_ARGUMENTS[@]}"
 
 # Start Cake
 exec dotnet "$CAKE_EXE" $SCRIPT "${CAKE_ARGUMENTS[@]}"
