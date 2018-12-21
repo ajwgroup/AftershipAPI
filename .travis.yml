@@ -1,6 +1,7 @@
 language: csharp
 dotnet: 2.2
 mono: none
+dist: xenial
 
 env:
   global:
