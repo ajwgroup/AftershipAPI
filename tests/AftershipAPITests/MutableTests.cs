@@ -1,146 +1,140 @@
-﻿//using AftershipAPI;
-//using AftershipAPI.Enums;
-//using FluentAssertions;
-//using Microsoft.Extensions.Configuration;
-//using Microsoft.VisualStudio.TestTools.UnitTesting;
-//using System;
+﻿using AftershipAPI;
+using AftershipAPI.Enums;
+using FluentAssertions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
-//namespace AftershipAPITests
-//{
-//    [TestClass]
-//    public class MutableTests
-//    {
-//        /// <summary>
-//        /// Tests that use up API Requests
-//        /// </summary>
+namespace AftershipAPITests
+{
+   [TestClass]
+   public class MutableTests
+   {
+       /// <summary>
+       /// Tests that use up API Requests
+       /// </summary>
 
-//        //ConnectionAPI connection;
+       ConnectionAPI connection;
 
-//        //Tracking NewTracking;
-//        //Tracking NewTrackingWithSlug;
-//        //Tracking TrackingToBeDeleted;
-//        //Tracking TrackingToBeUpdated;
+       Tracking NewTracking;
+       Tracking NewTrackingWithSlug;
+       Tracking TrackingToBeDeleted;
+       Tracking TrackingToBeUpdated;
 
-//        //[TestInitialize]
-//        //public void SetUp()
-//        //{
-//        //    var config = new ConfigurationBuilder()
-//        //     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-//        //     .AddEnvironmentVariables()
-//        //     .Build();
+       [TestInitialize]
+       public void SetUp()
+       {
+          var config = new ConfigurationBuilder()
+           .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+           .AddEnvironmentVariables()
+           .Build();
 
-          
 
-//        //    connection = new ConnectionAPI(config["AftershipApiKey"]);
-//        //}
 
-//        private void CreateTrackingIfNotExist(string trackingNumber, string slug)
-//        {
-//            //var checkTracking = new Tracking(trackingNumber) { Slug = slug };
-//            //var tracking = connection.GetTrackingByNumber(checkTracking);
+          connection = new ConnectionAPI(config["AftershipApiKey"]);
+       }
 
-//            //if (tracking == null)
-//            //    connection.DeleteTracking(checkTracking);
-//            Assert.IsTrue(true);
-//        }
+       private void CreateTrackingIfNotExist(string trackingNumber, string slug)
+       {
+           var checkTracking = new Tracking(trackingNumber) { Slug = slug };
+           var tracking = connection.GetTrackingByNumber(checkTracking);
 
-//        private void DeleteTrackingIfExists(string trackingNumber, string slug)
-//        {
-//            //var checkTracking = new Tracking(trackingNumber) { Slug = slug };
+           if (tracking == null)
+              connection.DeleteTracking(checkTracking);
+       }
 
-//            //try
-//            //{
-//            //    var tracking = connection.GetTrackingByNumber(checkTracking);
+       private void DeleteTrackingIfExists(string trackingNumber, string slug)
+       {
+           var checkTracking = new Tracking(trackingNumber) { Slug = slug };
 
-//            //    if (tracking != null)
-//            //        connection.DeleteTracking(checkTracking);
-//            //}
-//            //catch { }
-//            Assert.IsTrue(true);
-//        }
+           try
+           {
+              var tracking = connection.GetTrackingByNumber(checkTracking);
 
-//        [TestMethod]
-//        public void CreateTracking_CreateTrackingWithoutSlug_CreatedSuccessfully()
-//        {
-//            //const string trackingNumber = "1Z12345E0205271688";
-//            //const string slug = "ups";
+              if (tracking != null)
+                  connection.DeleteTracking(checkTracking);
+           }
+           catch { }
+       }
 
-//            //DeleteTrackingIfExists(trackingNumber, slug);
+       [TestMethod]
+       public void CreateTracking_CreateTrackingWithoutSlug_CreatedSuccessfully()
+       {
+           const string trackingNumber = "1Z12345E0205271688";
+           const string slug = "ups";
 
-//            //NewTracking = new Tracking(trackingNumber)
-//            //{
-//            //    OrderIDPath = "OrderIDPathPost",
-//            //    CustomerName = "CustomerNamePost",
-//            //    OrderID = "OrderIDPost",
-//            //    Title = "TitlePost",
-//            //    DestinationCountryISO3 = ISO3Country.GBR
-//            //};
+           DeleteTrackingIfExists(trackingNumber, slug);
 
-//            //var result = connection.CreateTracking(NewTracking);
+           NewTracking = new Tracking(trackingNumber)
+           {
+              OrderIDPath = "OrderIDPathPost",
+              CustomerName = "CustomerNamePost",
+              OrderID = "OrderIDPost",
+              Title = "TitlePost",
+              DestinationCountryISO3 = ISO3Country.GBR
+           };
 
-//            //result.TrackingNumber.Should().Be(NewTracking.TrackingNumber);
-//            Assert.IsTrue(true);
-//        }
+           var result = connection.CreateTracking(NewTracking);
 
-//        [TestMethod]
-//        public void CreateTracking_CreateTrackingWithSlug_CreatedSuccessfully()
-//        {
-//            //const string trackingNumber = "990728071";
-//            //const string slug = "ups";
+           result.TrackingNumber.Should().Be(NewTracking.TrackingNumber);
+       }
 
-//            //DeleteTrackingIfExists(trackingNumber, slug);
+       [TestMethod]
+       public void CreateTracking_CreateTrackingWithSlug_CreatedSuccessfully()
+       {
+           const string trackingNumber = "990728071";
+           const string slug = "ups";
 
-//            //NewTrackingWithSlug = new Tracking(trackingNumber)
-//            //{
-//            //    Slug = slug,
-//            //    OrderIDPath = "OrderIDPathPost",
-//            //    CustomerName = "CustomerNamePost",
-//            //    OrderID = "OrderIDPost",
-//            //    Title = "TitlePost",
-//            //    DestinationCountryISO3 = ISO3Country.GBR
-//            //};
+           DeleteTrackingIfExists(trackingNumber, slug);
 
-//            //var result = connection.CreateTracking(NewTrackingWithSlug);
+           NewTrackingWithSlug = new Tracking(trackingNumber)
+           {
+              Slug = slug,
+              OrderIDPath = "OrderIDPathPost",
+              CustomerName = "CustomerNamePost",
+              OrderID = "OrderIDPost",
+              Title = "TitlePost",
+              DestinationCountryISO3 = ISO3Country.GBR
+           };
 
-//            //result.TrackingNumber.Should().Be(NewTrackingWithSlug.TrackingNumber);
-//            Assert.IsTrue(true);
-//        }
+           var result = connection.CreateTracking(NewTrackingWithSlug);
 
-//        [TestMethod]
-//        public void DeleteTracking_TrackingIsDeleted()
-//        {
-//            //const string trackingNumber = "1Z12345E0205271688";
-//            //const string slug = "ups";
+           result.TrackingNumber.Should().Be(NewTrackingWithSlug.TrackingNumber);
+       }
 
-//            //CreateTrackingIfNotExist(trackingNumber, slug);
-//            //TrackingToBeDeleted = new Tracking(trackingNumber) { Slug = slug };
+       [TestMethod]
+       public void DeleteTracking_TrackingIsDeleted()
+       {
+           const string trackingNumber = "1Z12345E0205271688";
+           const string slug = "ups";
 
-//            //var result = connection.DeleteTracking(TrackingToBeDeleted);
+           CreateTrackingIfNotExist(trackingNumber, slug);
+           TrackingToBeDeleted = new Tracking(trackingNumber) { Slug = slug };
 
-//            //result.Should().BeTrue();
-//            Assert.IsTrue(true);
-//        }
+           var result = connection.DeleteTracking(TrackingToBeDeleted);
 
-//        [TestMethod]
-//        public void PutTracking_ExistingTrackingIsSubmited_TrackingIsUpdated()
-//        {
-//            //var now = DateTime.Now;
+           result.Should().BeTrue();
+       }
 
-//            //TrackingToBeUpdated = new Tracking("ER751105042015062")
-//            //{
-//            //    Slug = "ups",
-//            //    OrderIDPath = "OrderIDPathPost",
-//            //    CustomerName = "CustomerNamePost",
-//            //    OrderID = "OrderIDPost",
-//            //    Title = "TitlePost",
-//            //    UpdatedAt = now,
-//            //    DestinationCountryISO3 = ISO3Country.GBR
-//            //};
+       [TestMethod]
+       public void PutTracking_ExistingTrackingIsSubmited_TrackingIsUpdated()
+       {
+           var now = DateTime.Now;
 
-//            //var result = connection.PutTracking(TrackingToBeUpdated);
+           TrackingToBeUpdated = new Tracking("ER751105042015062")
+           {
+              Slug = "ups",
+              OrderIDPath = "OrderIDPathPost",
+              CustomerName = "CustomerNamePost",
+              OrderID = "OrderIDPost",
+              Title = "TitlePost",
+              UpdatedAt = now,
+              DestinationCountryISO3 = ISO3Country.GBR
+           };
 
-//            //result.UpdatedAt.ToShortDateString().Should().Be(TrackingToBeUpdated.UpdatedAt.ToShortDateString());
-//            Assert.IsTrue(true);
-//        }
-//    }
-//}
+           var result = connection.PutTracking(TrackingToBeUpdated);
+
+           result.UpdatedAt.ToShortDateString().Should().Be(TrackingToBeUpdated.UpdatedAt.ToShortDateString());
+       }
+   }
+}
