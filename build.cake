@@ -1,14 +1,14 @@
 // #tool "nuget:?package=coveralls.io&version=1.4.2"
 #addin Cake.Git
 // #addin "nuget:?package=Cake.Coveralls&version=0.9.0"
-#addin "Cake.MiniCover"
+#addin "nuget:?package=Cake.MiniCover&version=0.29.0-next20180721071547&prerelease"
 
-SetMiniCoverToolsProject("./minicover/minicover.csproj");
 
 //////////////////////////////////////////////////////
 //      CONSTANTS AND ENVIRONMENT VARIABLES         //
 //////////////////////////////////////////////////////
 
+SetMiniCoverToolsProject("./minicover/minicover.csproj");
 var target = Argument("target", "Default");
 var artifactsDir = "./artifacts/";
 var projectName = Argument<string>("projectName", null);
@@ -78,26 +78,15 @@ Task("UploadCoverage")
   .IsDependentOn("build")
     .Does(() =>
 {
-    MiniCover(tool =>
-        {
-            foreach(var project in GetFiles("./tests/**/*.csproj"))
-            {
-                tool.DotNetCoreTest(project.FullPath, new DotNetCoreTestSettings()
-                {
-                    // Required to keep instrumentation added by MiniCover
-                    NoBuild = true,
-                    Configuration = configuration
-                });
-            }
-        },
-        new MiniCoverSettings()
-            .WithAssembliesMatching("./test/**/*.dll")
-            .WithSourcesMatching("./src/**/*.cs")
-            .GenerateReport(ReportType.CONSOLE | ReportType.XML)
-            .Coveralls(new CoverallsSettings(){
-                RepoToken = coverallsToken
-            })
+     if (!TravisCI.IsRunningOnTravisCI)
+    {
+        Warning("Not running on travis, cannot publish coverage");
+        return;
+    }
 
+    MiniCoverReport(new MiniCoverSettings()
+        .WithCoverallsSettings(c => c.UseTravisDefaults())
+        .GenerateReport(ReportType.COVERALLS)
     );
 });
 
