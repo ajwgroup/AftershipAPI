@@ -8,11 +8,18 @@ env:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
     - DOTNET_CLI_TELEMETRY_OPTOUT=1
 
+addons:
+  sonarcloud:
+    organization: "ajwgroup"
+    token:
+      secure: $SONARCLOUD_TOKEN
+
 script:
   - dotnet build AftershipAPI.sln -c Release
   - dotnet test -c Release --no-build tests/AftershipAPITests/AftershipAPITests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 after_success:
   - echo dotnet test succeeded
   - bash <(curl -s https://codecov.io/bash)
+  - sonar-scanner
 after_failure:
   - echo There has been an issue with build/test
