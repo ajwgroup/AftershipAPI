@@ -23,5 +23,5 @@ env:
 dotnet: 2.2
 mono: none
 script:
-  - chmod +x ./build.sh && ./build.sh --currentBranch=$TRAVIS_BRANCH --projectName=$PROJECT_NAME --verbose
+  - chmod +x ./build.sh && ./build.sh --currentBranch=$TRAVIS_BRANCH --projectName=$PROJECT_NAME -v=diagnostic
   # - sonar-scanner
