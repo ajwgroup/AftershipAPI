@@ -1,7 +1,9 @@
-#tool "nuget:?package=coveralls.io&version=1.4.2"
+// #tool "nuget:?package=coveralls.io&version=1.4.2"
 #addin Cake.Git
-#addin "nuget:?package=Cake.Coveralls&version=0.9.0"
+// #addin "nuget:?package=Cake.Coveralls&version=0.9.0"
+#addin "Cake.MiniCover"
 
+SetMiniCoverToolsProject("./minicover/minicover.csproj");
 
 //////////////////////////////////////////////////////
 //      CONSTANTS AND ENVIRONMENT VARIABLES         //
@@ -73,15 +75,31 @@ Task("Test")
     });
 
 Task("UploadCoverage")
-    .IsDependentOn("Test")
+  .IsDependentOn("build")
     .Does(() =>
-    {
-        CoverallsIo(artifactsDir + coverageResultsFileName, new CoverallsIoSettings()
+{
+    MiniCover(tool =>
         {
-            Debug = true,
-            RepoToken = coverallsToken
-        });
-    });
+            foreach(var project in GetFiles("./tests/**/*.csproj"))
+            {
+                tool.DotNetCoreTest(project.FullPath, new DotNetCoreTestSettings()
+                {
+                    // Required to keep instrumentation added by MiniCover
+                    NoBuild = true,
+                    Configuration = configuration
+                });
+            }
+        },
+        new MiniCoverSettings()
+            .WithAssembliesMatching("./test/**/*.dll")
+            .WithSourcesMatching("./src/**/*.cs")
+            .GenerateReport(ReportType.CONSOLE | ReportType.XML)
+            .Coveralls(new CoverallsSettings(){
+                RepoToken = coverallsToken
+            })
+
+    );
+});
 
 Task("Package")
     .Does(() => {
