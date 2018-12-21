@@ -9,7 +9,7 @@ env:
     - DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 script:
-  - dotnet build
+  - dotnet build AftershipAPI.sln -c Release
   - dotnet test -c Release --no-build tests/AftershipAPITests/AftershipAPITests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 after_success:
   - echo dotnet test succeeded
