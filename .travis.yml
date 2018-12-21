@@ -21,7 +21,7 @@ env:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
     - DOTNET_CLI_TELEMETRY_OPTOUT=1
 dotnet: 2.2
-mono: none
+# mono: none
 script:
   - chmod +x ./build.sh && ./build.sh --currentBranch=$TRAVIS_BRANCH --projectName=$PROJECT_NAME -v=diagnostic
   # - sonar-scanner
