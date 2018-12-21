@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AftershipAPI", "src\Aftersh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AftershipAPITests", "tests\AftershipAPITests\AftershipAPITests.csproj", "{37FF70C4-3B22-4175-A12D-28803D035BDB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "minicover", "minicover\minicover.csproj", "{93AB71D6-3471-4A30-8D9B-B6D91E51B55D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{37FF70C4-3B22-4175-A12D-28803D035BDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37FF70C4-3B22-4175-A12D-28803D035BDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37FF70C4-3B22-4175-A12D-28803D035BDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93AB71D6-3471-4A30-8D9B-B6D91E51B55D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93AB71D6-3471-4A30-8D9B-B6D91E51B55D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93AB71D6-3471-4A30-8D9B-B6D91E51B55D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93AB71D6-3471-4A30-8D9B-B6D91E51B55D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
