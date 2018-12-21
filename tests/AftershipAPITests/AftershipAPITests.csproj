@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AftershipAPI\AftershipAPI.csproj" />
+    <ProjectReference Include="..\..\src\AftershipAPI\AftershipAPI.csproj" />
   </ItemGroup>
 
 </Project>

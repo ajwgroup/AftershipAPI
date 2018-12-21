@@ -1,9 +1,6 @@
 #tool "nuget:?package=coveralls.io&version=1.4.2"
 #addin Cake.Git
-#addin nuget:?package=Nuget.Core
 #addin "nuget:?package=Cake.Coveralls&version=0.9.0"
-
-using NuGet;
 
 
 //////////////////////////////////////////////////////
@@ -12,10 +9,11 @@ using NuGet;
 
 var target = Argument("target", "Default");
 var artifactsDir = "./artifacts/";
-var solutionPath = "AftershipAPI.sln";
-var project = "./AftershipAPI/AftershipAPI.csproj";
-var testFolder = "./AftershipAPITests/";
-var testProject = testFolder + "AftershipAPITests.csproj";
+var projectName = Argument<string>("projectName", null);
+var solutionPath = projectName + ".sln";
+var project = "./src/" + projectName + "/" + projectName + ".csproj";
+var testFolder = "./tests/" + projectName + "Tests/";
+var testProject = testFolder + projectName + "Tests.csproj";
 var coverageResultsFileName = "coverage.xml";
 var currentBranch = Argument<string>("currentBranch", GitBranchCurrent("./").FriendlyName);
 var isReleaseBuild = string.Equals(currentBranch, "master", StringComparison.OrdinalIgnoreCase);
@@ -80,6 +78,7 @@ Task("UploadCoverage")
     {
         CoverallsIo(artifactsDir + coverageResultsFileName, new CoverallsIoSettings()
         {
+            Debug = true,
             RepoToken = coverallsToken
         });
     });
@@ -106,15 +105,8 @@ Task("Publish")
         var pkgs = GetFiles(artifactsDir + "*.nupkg");
         foreach(var pkg in pkgs)
         {
-            if(!IsNuGetPublished(pkg))
-            {
-                Information($"Publishing \"{pkg}\".");
-                DotNetCoreNuGetPush(pkg.FullPath, pushSettings);
-            }
-            else {
-                Information($"Bypassing publishing \"{pkg}\" as it is already published.");
-            }
-
+            Information($"Publishing \"{pkg}\".");
+            DotNetCoreNuGetPush(pkg.FullPath, pushSettings);
         }
     });
 
@@ -154,22 +146,3 @@ Task("Default")
 
 
 RunTarget(target);
-
-
-//////////////////////////////////////////////////////
-//                      HELPERS                     //
-//////////////////////////////////////////////////////
-
-private bool IsNuGetPublished(FilePath packagePath) {
-    var package = new ZipPackage(packagePath.FullPath);
-
-    var latestPublishedVersions = NuGetList(
-        package.Id,
-        new NuGetListSettings
-        {
-            Prerelease = true
-        }
-    );
-
-    return latestPublishedVersions.Any(p => package.Version.Equals(new SemanticVersion(p.Version)));
-}
