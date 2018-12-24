@@ -14,6 +14,10 @@ addons:
     token:
       secure: $SONARCLOUD_TOKEN
 
+cache:
+  directories:
+    - '$HOME/.sonar/cache'
+
 script:
   - dotnet build AftershipAPI.sln -c Release
   - dotnet test -c Release --no-build tests/AftershipAPITests/AftershipAPITests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
