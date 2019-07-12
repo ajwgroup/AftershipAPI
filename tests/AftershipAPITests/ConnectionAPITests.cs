@@ -28,31 +28,6 @@ namespace AftershipAPITests
         }
 
         [TestMethod]
-        public void GetLastCheckpoint_ProvideTracking_GetLastCheckpoint()
-        {
-            var tracking = new Tracking("RU330890326NL") { Slug = "postnl-international" };
-
-            var result = connection.GetLastCheckpoint(tracking);
-
-            result.CheckpointTime.Should().Be("12/13/2018 15:20:00");
-        }
-
-        [TestMethod]
-        public void GetLastCheckpoint_ProvideTrackingWithExtraParams_GetLastCheckpoint()
-        {
-            var fields = new List<FieldCheckpoint>() { FieldCheckpoint.created_at };
-            var lang = "";
-
-            var tracking = new Tracking("RU330890326NL") { Slug = "postnl-international" };
-
-            var result = connection.GetLastCheckpoint(tracking, fields, lang);
-
-            var expected = new DateTime(2018, 12, 13, 17, 35, 47);
-
-            result.CreatedAt.Should().Be(expected);
-        }
-
-        [TestMethod]
         public void Retrack_TrackingIsActive_ThrowExceptionOnlyInactiveCanRetrack()
         {
             var tracking = new Tracking("990728071") { Slug = "ups" };
@@ -67,7 +42,7 @@ namespace AftershipAPITests
         {
             var result = connection.GetTrackings(1);
 
-            result.Should().HaveCount(4);
+            result.Should().HaveCount(2);
         }
 
         [TestMethod]
@@ -76,7 +51,6 @@ namespace AftershipAPITests
             var result = connection.DetectCouriers("ER751105042015062");
 
             result.Should().BeEmpty();
-
         }
 
         [TestMethod]
@@ -107,7 +81,7 @@ namespace AftershipAPITests
 
             var result = connection.GetTrackingByNumber(tracking, fields, "");
 
-            var expected = new DateTime(2018, 12, 13, 14, 35, 35);
+            var expected = new DateTime(2019, 07, 12, 08, 47, 52);
 
             result.CreatedAt.Should().Be(expected);
         }
