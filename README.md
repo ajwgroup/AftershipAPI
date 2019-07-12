@@ -8,7 +8,7 @@
 [![Coverage Status](https://img.shields.io/codecov/c/github/ajwgroup/AftershipAPI.svg?logo=codecov&style=flat-square)](https://codecov.io/gh/ajwgroup/AftershipAPI)
 [![Last commit](https://img.shields.io/github/last-commit/ajwgroup/AftershipAPI.svg?style=flat-square)](https://github.com/ajwgroup/AftershipAPI)
 
-This is an unofficial Aftership SDK for .NET Core version 2.2.
+This is an unofficial Aftership SDK for .NET Core version 2.1.
 
 [Aftership](https://www.aftership.com) provides a parcel tracking service that works with hundreds of couriers from arround the world.
 
