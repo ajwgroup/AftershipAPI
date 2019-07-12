@@ -42,7 +42,7 @@ namespace AftershipAPITests
         {
             var result = connection.GetTrackings(1);
 
-            result.Should().HaveCount(2);
+            result.Should().HaveCount(3);
         }
 
         [TestMethod]
@@ -81,7 +81,7 @@ namespace AftershipAPITests
 
             var result = connection.GetTrackingByNumber(tracking, fields, "");
 
-            var expected = new DateTime(2019, 07, 12, 08, 47, 52);
+            var expected = new DateTime(2019, 07, 12, 07, 47, 52);
 
             result.CreatedAt.Should().Be(expected);
         }
