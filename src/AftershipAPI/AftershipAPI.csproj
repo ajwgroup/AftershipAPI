@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://github.com/ajwgroup/AftershipAPI</PackageProjectUrl>
     <PackageLicense>https://github.com/ajwgroup/AftershipAPI/blob/master/LICENSE</PackageLicense>
     <PackageTags>Aftership API AJW Track Tracking Courier Couriers</PackageTags>
-    <Description>.NET core 2.2 package for the Aftership API</Description>
+    <Description>.NET core 2.1 package for the Aftership API</Description>
   </PropertyGroup>
 
   <ItemGroup>
