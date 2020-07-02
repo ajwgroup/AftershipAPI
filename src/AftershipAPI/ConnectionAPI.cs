@@ -13,7 +13,7 @@ namespace AftershipAPI
     /// </summary>
     public class ConnectionAPI
     {
-        readonly string _tokenAftership;
+        readonly string _aftershipApiToken;
         readonly string _url;
         private const string URL_SERVER = "https://api.aftership.com/";
         private const string VERSION_API = "v4";
@@ -21,11 +21,16 @@ namespace AftershipAPI
         /// <summary>
         /// Constructor ConnectionAPI
         /// </summary>
-        /// <param name="tokenAfthership"> Afthership token for the connection</param>
+        /// <param name="aftershipApiToken"> Afthership token for the connection</param>
         /// <returns></returns>
-        public ConnectionAPI(string tokenAfthership, string url = null)
+        public ConnectionAPI(string aftershipApiToken, string url = null)
         {
-            _tokenAftership = tokenAfthership;
+            if (string.IsNullOrWhiteSpace(aftershipApiToken))
+            {
+                throw new ArgumentException($"'{nameof(aftershipApiToken)}' cannot be null or whitespace", nameof(aftershipApiToken));
+            }
+
+            _aftershipApiToken = aftershipApiToken;
             _url = url ?? URL_SERVER;
         }
 
@@ -381,7 +386,7 @@ namespace AftershipAPI
 
             var header = new WebHeaderCollection
             {
-                { "aftership-api-key", _tokenAftership }
+                { "aftership-api-key", _aftershipApiToken }
             };
 
             request.Headers = header;
