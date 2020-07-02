@@ -15,10 +15,8 @@ namespace AftershipAPI
     {
         readonly string _tokenAftership;
         readonly string _url;
-        private static readonly string URL_SERVER = "https://api.aftership.com/";
-
-        //private static String URL_SERVER = "http://localhost:3001/";
-        private static readonly string VERSION_API = "v4";
+        private const string URL_SERVER = "https://api.aftership.com/";
+        private const string VERSION_API = "v4";
 
         /// <summary>
         /// Constructor ConnectionAPI
@@ -42,7 +40,7 @@ namespace AftershipAPI
         /// <returns>The last Checkpoint object</returns>
         public Tracking PutTracking(Tracking tracking)
         {
-            JObject response = Request("PUT", "/trackings/" + ParametersExtra(tracking), tracking.GeneratePutJSON());
+            JObject response = Request("PUT", $"/trackings/{ParametersExtra(tracking)}", tracking.GeneratePutJSON());
 
             return new Tracking((JObject)response["data"]["tracking"]);
         }
@@ -62,7 +60,7 @@ namespace AftershipAPI
         {
             string parametersExtra = ParametersExtra(tracking);
 
-            JObject response = Request("GET", "/last_checkpoint/" + parametersExtra, null);
+            JObject response = Request("GET", $"/last_checkpoint/{parametersExtra}", null);
 
             JObject checkpointJSON = (JObject)response["data"]["checkpoint"];
 
@@ -88,7 +86,7 @@ namespace AftershipAPI
 
             string parametersExtra = UseTrackingIdOrExtraParameters(tracking, parameters);
             
-            JObject response = Request("GET", "/last_checkpoint/" + parametersExtra, null);
+            JObject response = Request("GET", $"/last_checkpoint/{parametersExtra}", null);
 
             JObject checkpointJSON = (JObject)response["data"]["checkpoint"];
 
@@ -97,9 +95,9 @@ namespace AftershipAPI
 
         private static string UseTrackingIdOrExtraParameters(Tracking tracking, string parameters)
         {
-            return (!string.IsNullOrEmpty(tracking.Id)) ? 
-                tracking.Id + parameters :
-                tracking.Slug + "/" + tracking.TrackingNumber + parameters + tracking.GetQueryRequiredFields();
+            return (!string.IsNullOrEmpty(tracking.Id)) ?
+                $"{tracking.Id}{parameters}" :
+                $"{tracking.Slug}/{tracking.TrackingNumber}{parameters}{tracking.GetQueryRequiredFields()}";
         }
 
         /// <summary>
@@ -113,10 +111,9 @@ namespace AftershipAPI
         ///         Slug and active (to true)</returns>
         public bool Retrack(Tracking tracking)
         {
-            JObject response = Request("POST", "/trackings/" + tracking.Slug +
-                "/" + tracking.TrackingNumber + "/retrack" + tracking.GetQueryRequiredFields(), null);
+            JObject response = Request("POST", $"/trackings/{tracking.Slug}/{tracking.TrackingNumber}/retrack{tracking.GetQueryRequiredFields()}", null);
 
-            return IsOKResponse(response) ? (bool)response["data"]["tracking"]["active"] : false;
+            return IsOKResponse(response) && (bool)response["data"]["tracking"]["active"];
         }
 
         private static bool IsOKResponse(JObject response) => (int)response["meta"]["code"] == 200;
@@ -130,7 +127,7 @@ namespace AftershipAPI
         /// <returns> A List of Tracking Objects from your account. Max 100 trackings
         public List<Tracking> GetTrackings(int page)
         {
-            JObject response = Request("GET", "/trackings?limit=100&page=" + page, null);
+            JObject response = Request("GET", $"/trackings?limit=100&page={page}", null);
             JArray trackingJSON = (JArray)response["data"]["trackings"];
 
             return (trackingJSON.Count != 0) ? trackingJSON.Select(tracking => new Tracking((JObject)tracking)).ToList() : null;
@@ -143,7 +140,7 @@ namespace AftershipAPI
         /// <returns> A List of Tracking Objects from your account.
         public List<Tracking> GetTrackings(ParametersTracking parameters)
         {
-            JObject response = Request("GET", "/trackings?" + parameters.GenerateQueryString(), null);
+            JObject response = Request("GET", $"/trackings?{parameters.GenerateQueryString()}", null);
             JArray trackingJSON = (JArray)response["data"]["trackings"];
 
             if (trackingJSON.Count != 0)
@@ -246,7 +243,7 @@ namespace AftershipAPI
         /// <returns>The next page of Tracking Objects from your account</returns>
         public List<Tracking> GetTrackingsNext(ParametersTracking parameters)
         {
-            parameters.Page = parameters.Page + 1;
+            parameters.Page += 1;
             return GetTrackings(parameters);
         }
 
@@ -286,9 +283,9 @@ namespace AftershipAPI
             else
             {
                 //get the require fields if any (postal_code, tracking_account etc..)
-                parametersAll = tracking.Slug + "/" + tracking.TrackingNumber;
+                parametersAll = $"{tracking.Slug}/{tracking.TrackingNumber}";
             }
-            JObject response = Request("DELETE", "/trackings/" + parametersAll, null);
+            JObject response = Request("DELETE", $"/trackings/{parametersAll}", null);
 
             return IsOKResponse(response);
         }
@@ -311,10 +308,9 @@ namespace AftershipAPI
             else
             {
                 //get the require fields if any (postal_code, tracking_account etc..)
-                parametersExtra = trackingGet.Slug + "/" + trackingGet.TrackingNumber +
-                    trackingGet.GetQueryRequiredFields();
+                parametersExtra = $"{trackingGet.Slug}/{trackingGet.TrackingNumber}{trackingGet.GetQueryRequiredFields()}";
             }
-            JObject response = Request("GET", "/trackings/" + parametersExtra, null);
+            JObject response = Request("GET", $"/trackings/{parametersExtra}", null);
 
             return TrackingFromResponse(response);
         }
@@ -346,17 +342,16 @@ namespace AftershipAPI
 
             if (!string.IsNullOrEmpty(trackingGet.Id))
             {
-                parametersAll = trackingGet.Id + params_query;
+                parametersAll = $"{trackingGet.Id}{params_query}";
             }
             else
             {
                 //get the require fields if any (postal_code, tracking_account etc..)
                 string paramRequiredFields = trackingGet.GetQueryRequiredFields();
-                parametersAll = trackingGet.Slug +
-                "/" + trackingGet.TrackingNumber + params_query + paramRequiredFields;
+                parametersAll = $"{trackingGet.Slug}/{trackingGet.TrackingNumber}{params_query}{paramRequiredFields}";
             }
 
-            JObject response = Request("GET", "/trackings/" + parametersAll, null);
+            JObject response = Request("GET", $"/trackings/{parametersAll}", null);
 
             return TrackingFromResponse(response);
         }
@@ -395,8 +390,8 @@ namespace AftershipAPI
 
             if (body != null)
             {
-                using (var streamWriter = new StreamWriter(request.GetRequestStream()))
-                    streamWriter.Write(body);
+                using var streamWriter = new StreamWriter(request.GetRequestStream());
+                streamWriter.Write(body);
             }
 
             string json_response = JsonResponseFromWebResponse(request);
@@ -425,12 +420,10 @@ namespace AftershipAPI
                 {
                     //probably Aftership will give more information of the problem, so we read the response
                     HttpWebResponse response = e.Response as HttpWebResponse;
-                    using (var stream = response.GetResponseStream())
-                    using (var reader = new StreamReader(stream))
-                    {
-                        string text = reader.ReadToEnd();
-                        throw new WebException(text, e);
-                    }
+                    using var stream = response.GetResponseStream();
+                    using var reader = new StreamReader(stream);
+                    string text = reader.ReadToEnd();
+                    throw new WebException(text, e);
                 }
             }
             catch (Exception e)
