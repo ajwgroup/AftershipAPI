@@ -3,14 +3,13 @@
 
 namespace AftershipAPI
 {
-    public class DateMethods
+    public static class DateMethods
     {
-        private static readonly string ISO8601Short = "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz";
+        private const string ISO8601Short = "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz";
 
-        public static string ToString(DateTime date)
-        {
-            // since we pass it to UniversalTime we can add the +00:00 manually
-            return date.ToString(ISO8601Short);
-        }
+        // since we pass it to UniversalTime we can add the +00:00 manually
+        public static string ToString(DateTime date) => date.ToString(ISO8601Short);
+
+        public static string ToISO8601Short(this DateTime date) => date.ToString(ISO8601Short);
     }
 }
