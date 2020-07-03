@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace AftershipAPI
 {
@@ -8,7 +9,9 @@ namespace AftershipAPI
 	/// </summary>
 	public class Querystring
     {
-        public string Query { get; set; } = "";
+        private readonly StringBuilder _query = new StringBuilder();
+
+        public string Query => _query.ToString();
 
         public Querystring() { }
 
@@ -21,16 +24,16 @@ namespace AftershipAPI
 
         public void Add(string name, string value)
         {
-            Query += NewQueryOrAdd(Query);
+            _query.Append(NewQueryOrAdd(Query.Length));
 
             Encode(name, value);
         }
 
-        private string NewQueryOrAdd(string query) => string.IsNullOrEmpty(query) ? "?" : "&";
+        private string NewQueryOrAdd(int queryLength) => queryLength == 0 ? "?" : "&";
 
-        private void Encode(string name, string value) => Query += $"{Uri.EscapeDataString(name)}={Uri.EscapeDataString(value)}";
+        private void Encode(string name, string value) => _query.Append($"{Uri.EscapeDataString(name)}={Uri.EscapeDataString(value)}");
 
-        public string GetQuery() => Query;
+        public string GetQuery() => Query.ToString();
 
         public override string ToString() => GetQuery();
     }
