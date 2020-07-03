@@ -1,11 +1,13 @@
 ﻿using AftershipAPI;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
 namespace AftershipAPITests
 {
+
     [TestClass]
     public class TrackingTests
     {
@@ -23,11 +25,11 @@ namespace AftershipAPITests
                 OrderIDPath = "idpath"
             };
 
-            var jsonString = tracking.GeneratePutJSON();
+            var jsonString = JsonConvert.SerializeObject(tracking);
 
             var result = JObject.Parse(jsonString);
 
-            result["tracking"].Values().Should().Contain("title", "emails", "smses", "customer_name", "order_id", "order_id_path");
+            result.Values().Should().Contain("title", "emails", "smses", "customer_name", "order_id", "order_id_path");
         }
 
         [TestMethod]
@@ -35,12 +37,11 @@ namespace AftershipAPITests
         {
             var tracking = new Tracking("RU330890326NL") { Slug = "postnl-international" };
 
-            var jsonString = tracking.GetJSONPost();
+            var jsonString = JsonConvert.SerializeObject(tracking);
 
-            //result.Should().Be("{\r\n  \"tracking\": {\r\n    \"tracking_number\": \"RU330890326NL\",\r\n    \"slug\": \"postnl-international\",\r\n    \"title\": \"RU330890326NL\"\r\n  }\r\n}");
             var json = JObject.Parse(jsonString);
 
-            var result = json["tracking"].Values();
+            var result = json.Values();
 
             result.Should().Contain("RU330890326NL", "postnl-international");
         }
@@ -55,7 +56,6 @@ namespace AftershipAPITests
             result.Should().Be("_id: \n_trackingNumber: RU330890326NL\n_slug: postnl-international");
         }
 
-        //Borked
         [TestMethod]
         public void GetJSONPost_AddFieldsToTracking_ReturnsStringWithUpdatedTracking()
         {
@@ -65,15 +65,13 @@ namespace AftershipAPITests
             tracking.AddCustomFields("custom", "field");
 
 
-            var jsonString = tracking.GetJSONPost();
+            var jsonString = JsonConvert.SerializeObject(tracking);
 
             var json = JObject.Parse(jsonString);
 
-            var result = json["tracking"].Values();
+            var result = json.Values();
 
             result.Should().Contain("RU330890326NL", "postnl-international", "email");
-
-            //jsonString.Should().Be("{\r\n  \"tracking\": {\r\n    \"tracking_number\": \"RU330890326NL\",\r\n    \"slug\": \"postnl-international\",\r\n    \"title\": \"RU330890326NL\",\r\n    \"emails\": [\r\n      \"email\"\r\n    ],\r\n    \"smses\": [\r\n      \"sms\"\r\n    ],\r\n    \"custom_fields\": {\r\n      \"custom\": \"field\"\r\n    }\r\n  }\r\n}");
         }
     }
 }

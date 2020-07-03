@@ -17,5 +17,15 @@ namespace AftershipAPITests
 
             result.Should().Be("2018-12-30T11:59:59+00:00");
         }
+
+        [TestMethod]
+        public void ToISO8601Short_ProvideDate_DateOutputInCorrectFormat()
+        {
+            var testDate = new DateTime(2018, 12, 30, 11, 59, 59);
+
+            var result = testDate.ToISO8601Short();
+
+            result.Should().Be(DateMethods.ToString(testDate));
+        }
     }
 }

@@ -70,5 +70,73 @@ namespace AftershipAPITests
 
             result.Should().Be("page=1&limit=100&destination=GBR");
         }
+
+        [TestMethod]
+        public void AddDestinations_DestinationsIsContainsABW()
+        {
+            var parameterTracking = new ParametersTracking();
+
+            parameterTracking.AddDestination(ISO3Country.ABW);
+
+            var result = parameterTracking.GenerateQueryString();
+
+            result.Should().Contain("ABW");
+        }
+
+        [TestMethod]
+        public void DeleteDestinations_DestinationsIsEmpty()
+        {
+            var parameterTracking = new ParametersTracking();
+
+            parameterTracking.AddDestination(ISO3Country.ABW);
+
+            parameterTracking.DeleteDestinations();
+
+            var result = parameterTracking.GenerateQueryString();
+
+            result.Should().NotContain("ABW");
+        }
+
+        [TestMethod]
+        public void AddField_ContainsActiveField()
+        {
+            var parameterTracking = new ParametersTracking();
+
+            parameterTracking.AddField(FieldTracking.active);
+
+            var result = parameterTracking.GenerateQueryString();
+
+            result.Should().Contain("active");
+        }
+
+        [TestMethod]
+        public void DeleteFields_NoFields()
+        {
+            var parameterTracking = new ParametersTracking();
+
+            parameterTracking.AddField(FieldTracking.active);
+
+            parameterTracking.DeleteFields();
+
+            var result = parameterTracking.GenerateQueryString();
+
+            result.Should().NotContain("active");
+        }
+
+        [TestMethod]
+        public void DeleteField_FieldAlreadyNotProvided_ResultShouldBeTheSame()
+        {
+            var parameterTracking = new ParametersTracking();
+
+            parameterTracking.AddField(FieldTracking.active);
+
+            var expected = parameterTracking.GenerateQueryString();
+
+            parameterTracking.DeleteField(FieldTracking.checkpoints);
+
+            var result = parameterTracking.GenerateQueryString();
+
+            result.Should().Be(expected);
+        }
     }
 }

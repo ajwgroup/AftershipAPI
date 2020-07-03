@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>AftershipAPI</PackageId>
     <Authors>Adam Worley</Authors>
     <Company>AJW Aviation</Company>
     <PackageProjectUrl>https://github.com/ajwgroup/AftershipAPI</PackageProjectUrl>
     <PackageLicense>https://github.com/ajwgroup/AftershipAPI/blob/master/LICENSE</PackageLicense>
     <PackageTags>Aftership API AJW Track Tracking Courier Couriers</PackageTags>
-    <Description>.NET core 2.1 package for the Aftership API</Description>
+    <Description>.NET standard 2.1 package for the Aftership API</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
 </Project>

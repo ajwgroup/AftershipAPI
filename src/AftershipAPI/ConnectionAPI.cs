@@ -1,34 +1,59 @@
 ﻿using AftershipAPI.Enums;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("AftershipAPITests")]
 namespace AftershipAPI
 {
     /// <summary>
     /// Connection API. Connect with the API of Aftership
     /// </summary>
-    public class ConnectionAPI
+    public class ConnectionAPI : IConnectionAPI
     {
-        readonly string _tokenAftership;
         readonly string _url;
-        private static readonly string URL_SERVER = "https://api.aftership.com/";
+        private readonly IRequestClient _requestClient;
+        private const string URL_SERVER = "https://api.aftership.com/";
+        private const string VERSION_API = "v4";
 
-        //private static String URL_SERVER = "http://localhost:3001/";
-        private static readonly string VERSION_API = "v4";
+        internal ConnectionAPI(string aftershipApiToken, string url, IRequestClient requestClient)
+        {
+            _url = url ?? URL_SERVER;
+            _requestClient = requestClient ?? new RequestClient(aftershipApiToken);
+        }
 
         /// <summary>
         /// Constructor ConnectionAPI
         /// </summary>
-        /// <param name="tokenAfthership"> Afthership token for the connection</param>
+        /// <param name="aftershipApiToken"> Afthership token for the connection</param>
+        /// <param name="url">Override the aftership url. default is "https://api.aftership.com/"</param>
         /// <returns></returns>
-        public ConnectionAPI(string tokenAfthership, string url = null)
+        public ConnectionAPI(string aftershipApiToken, string url) : this(aftershipApiToken, url, new RequestClient(aftershipApiToken)){
+            if (string.IsNullOrWhiteSpace(aftershipApiToken))
+            {
+                throw new ArgumentException($"'{nameof(aftershipApiToken)}' cannot be null or whitespace", nameof(aftershipApiToken));
+            }
+
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                throw new ArgumentException($"'{nameof(url)}' cannot be null or empty", nameof(url));
+            }
+        }
+
+        /// <summary>
+        /// Constructor ConnectionAPI
+        /// </summary>
+        /// <param name="aftershipApiToken"> Afthership token for the connection</param>
+        /// <returns></returns>
+        public ConnectionAPI(string aftershipApiToken) : this(aftershipApiToken, URL_SERVER)
         {
-            _tokenAftership = tokenAfthership;
-            _url = url ?? URL_SERVER;
+            if (string.IsNullOrWhiteSpace(aftershipApiToken))
+            {
+                throw new ArgumentException($"'{nameof(aftershipApiToken)}' cannot be null or whitespace", nameof(aftershipApiToken));
+            }
         }
 
         /// <summary>
@@ -42,15 +67,13 @@ namespace AftershipAPI
         /// <returns>The last Checkpoint object</returns>
         public Tracking PutTracking(Tracking tracking)
         {
-            JObject response = Request("PUT", "/trackings/" + ParametersExtra(tracking), tracking.GeneratePutJSON());
-
-            return new Tracking((JObject)response["data"]["tracking"]);
+            return Request("PUT", $"/trackings/{ParametersExtra(tracking)}", JsonConvert.SerializeObject(tracking)).Data.Tracking;
         }
 
         private string ParametersExtra(Tracking tracking)
         {
             string queryParameters = tracking.GetQueryRequiredFields();
-            return  (!string.IsNullOrEmpty(tracking.Id)) ? tracking.Id : $"{tracking.Slug}/{tracking.TrackingNumber}{queryParameters}";            
+            return (!string.IsNullOrEmpty(tracking.Id)) ? tracking.Id : $"{tracking.Slug}/{tracking.TrackingNumber}{queryParameters}";
         }
 
         /// <summary>
@@ -62,11 +85,7 @@ namespace AftershipAPI
         {
             string parametersExtra = ParametersExtra(tracking);
 
-            JObject response = Request("GET", "/last_checkpoint/" + parametersExtra, null);
-
-            JObject checkpointJSON = (JObject)response["data"]["checkpoint"];
-
-            return (checkpointJSON.Count != 0) ? new Checkpoint(checkpointJSON) : null;
+            return Request("GET", $"/last_checkpoint/{parametersExtra}", null).Data.Checkpoint;
         }
 
         /// <summary>
@@ -87,19 +106,17 @@ namespace AftershipAPI
             string parameters = qs.ToString();
 
             string parametersExtra = UseTrackingIdOrExtraParameters(tracking, parameters);
-            
-            JObject response = Request("GET", "/last_checkpoint/" + parametersExtra, null);
 
-            JObject checkpointJSON = (JObject)response["data"]["checkpoint"];
+            var response = Request("GET", $"/last_checkpoint/{parametersExtra}", null);
 
-            return (checkpointJSON.Count != 0) ? new Checkpoint(checkpointJSON) : null;
+            return response.Data.Checkpoint;
         }
 
         private static string UseTrackingIdOrExtraParameters(Tracking tracking, string parameters)
         {
-            return (!string.IsNullOrEmpty(tracking.Id)) ? 
-                tracking.Id + parameters :
-                tracking.Slug + "/" + tracking.TrackingNumber + parameters + tracking.GetQueryRequiredFields();
+            return (!string.IsNullOrEmpty(tracking.Id)) ?
+                $"{tracking.Id}{parameters}" :
+                $"{tracking.Slug}/{tracking.TrackingNumber}{parameters}{tracking.GetQueryRequiredFields()}";
         }
 
         /// <summary>
@@ -113,13 +130,12 @@ namespace AftershipAPI
         ///         Slug and active (to true)</returns>
         public bool Retrack(Tracking tracking)
         {
-            JObject response = Request("POST", "/trackings/" + tracking.Slug +
-                "/" + tracking.TrackingNumber + "/retrack" + tracking.GetQueryRequiredFields(), null);
+            var response = Request("POST", $"/trackings/{tracking.Slug}/{tracking.TrackingNumber}/retrack{tracking.GetQueryRequiredFields()}", null);
 
-            return IsOKResponse(response) ? (bool)response["data"]["tracking"]["active"] : false;
+            return IsOKResponse(response) && response.Data.Tracking.Active;
         }
 
-        private static bool IsOKResponse(JObject response) => (int)response["meta"]["code"] == 200;
+        private static bool IsOKResponse(Response response) => response.Meta.Code == 200;
 
         /// <summary>
         ///Get as much as 100 trackings from your account, created less than 30 days ago. If you delete right before,
@@ -130,10 +146,7 @@ namespace AftershipAPI
         /// <returns> A List of Tracking Objects from your account. Max 100 trackings
         public List<Tracking> GetTrackings(int page)
         {
-            JObject response = Request("GET", "/trackings?limit=100&page=" + page, null);
-            JArray trackingJSON = (JArray)response["data"]["trackings"];
-
-            return (trackingJSON.Count != 0) ? trackingJSON.Select(tracking => new Tracking((JObject)tracking)).ToList() : null;
+            return Request("GET", $"/trackings?limit=100&page={page}", null)?.Data?.Trackings;
         }
 
         /// <summary>
@@ -143,13 +156,13 @@ namespace AftershipAPI
         /// <returns> A List of Tracking Objects from your account.
         public List<Tracking> GetTrackings(ParametersTracking parameters)
         {
-            JObject response = Request("GET", "/trackings?" + parameters.GenerateQueryString(), null);
-            JArray trackingJSON = (JArray)response["data"]["trackings"];
+            var response = Request("GET", $"/trackings?{parameters.GenerateQueryString()}", null);
+            var trackings = response.Data.Trackings;
 
-            if (trackingJSON.Count != 0)
+            if (trackings.Count != 0)
             {
-                parameters.Total = (int)response["data"]["count"];
-                return trackingJSON.Select(tracking => new Tracking((JObject)tracking)).ToList();
+                parameters.Total = response.Data.Count;
+                return trackings.ToList();
             }
 
             return Enumerable.Empty<Tracking>().ToList();
@@ -161,7 +174,7 @@ namespace AftershipAPI
         /// <returns>A list of Object Courier, with all the couriers supported by the API
         public List<Courier> GetAllCouriers()
         {
-            JObject response = Request("GET", "/couriers/all", null);
+            var response = Request("GET", "/couriers/all", null);
 
             return ListOfCouriersFromJsonDataCouriers(response);
         }
@@ -172,15 +185,13 @@ namespace AftershipAPI
         /// <returns>A list of Object Courier, with all the couriers supported by the API
         public List<Courier> GetCouriers()
         {
-            JObject response = Request("GET", "/couriers", null);
+            var response = Request("GET", "/couriers", null);
             return ListOfCouriersFromJsonDataCouriers(response);
         }
 
-        private static List<Courier> ListOfCouriersFromJsonDataCouriers(JObject response)
+        private static List<Courier> ListOfCouriersFromJsonDataCouriers(Response response)
         {
-            JArray couriersJSON = (JArray)response["data"]["couriers"];
-
-            return couriersJSON.Select(courier => new Courier((JObject)courier)).ToList();
+            return response.Data.Couriers;
         }
 
         /// <summary>
@@ -234,7 +245,7 @@ namespace AftershipAPI
                 { "tracking", tracking }
             };
 
-            JObject response = Request("POST", "/couriers/detect", body.ToString());
+            var response = Request("POST", "/couriers/detect", body.ToString());
 
             return ListOfCouriersFromJsonDataCouriers(response);
         }
@@ -246,7 +257,7 @@ namespace AftershipAPI
         /// <returns>The next page of Tracking Objects from your account</returns>
         public List<Tracking> GetTrackingsNext(ParametersTracking parameters)
         {
-            parameters.Page = parameters.Page + 1;
+            parameters.Page += 1;
             return GetTrackings(parameters);
         }
 
@@ -262,11 +273,11 @@ namespace AftershipAPI
         ///		     phone number is not valid). This response doesn't have checkpoints informed!</returns>
         public Tracking CreateTracking(Tracking tracking)
         {
-            string tracking_json = tracking.GetJSONPost();
+            string tracking_json = JsonConvert.SerializeObject(tracking);
 
-            JObject response = Request("POST", "/trackings", tracking_json);
+            var response = Request("POST", "/trackings", tracking_json);
 
-            return new Tracking((JObject)response["data"]["tracking"]);
+            return response.Data.Tracking;
         }
 
         /// <summary>
@@ -286,11 +297,10 @@ namespace AftershipAPI
             else
             {
                 //get the require fields if any (postal_code, tracking_account etc..)
-                parametersAll = tracking.Slug + "/" + tracking.TrackingNumber;
+                parametersAll = $"{tracking.Slug}/{tracking.TrackingNumber}";
             }
-            JObject response = Request("DELETE", "/trackings/" + parametersAll, null);
 
-            return IsOKResponse(response);
+            return IsOKResponse(Request("DELETE", $"/trackings/{parametersAll}", null));
         }
 
         /// <summary>
@@ -311,12 +321,12 @@ namespace AftershipAPI
             else
             {
                 //get the require fields if any (postal_code, tracking_account etc..)
-                parametersExtra = trackingGet.Slug + "/" + trackingGet.TrackingNumber +
-                    trackingGet.GetQueryRequiredFields();
+                parametersExtra = $"{trackingGet.Slug}/{trackingGet.TrackingNumber}{trackingGet.GetQueryRequiredFields()}";
             }
-            JObject response = Request("GET", "/trackings/" + parametersExtra, null);
+            
+            var response = Request("GET", $"/trackings/{parametersExtra}", null);
 
-            return TrackingFromResponse(response);
+            return response.Data.Tracking;
         }
 
         /// <summary>
@@ -346,26 +356,18 @@ namespace AftershipAPI
 
             if (!string.IsNullOrEmpty(trackingGet.Id))
             {
-                parametersAll = trackingGet.Id + params_query;
+                parametersAll = $"{trackingGet.Id}{params_query}";
             }
             else
             {
                 //get the require fields if any (postal_code, tracking_account etc..)
                 string paramRequiredFields = trackingGet.GetQueryRequiredFields();
-                parametersAll = trackingGet.Slug +
-                "/" + trackingGet.TrackingNumber + params_query + paramRequiredFields;
+                parametersAll = $"{trackingGet.Slug}/{trackingGet.TrackingNumber}{params_query}{paramRequiredFields}";
             }
 
-            JObject response = Request("GET", "/trackings/" + parametersAll, null);
+            var response = Request("GET", $"/trackings/{parametersAll}", null);
 
-            return TrackingFromResponse(response);
-        }
-
-        private static Tracking TrackingFromResponse(JObject response)
-        {
-            JObject trackingJSON = (JObject)response["data"]["tracking"];
-
-            return (trackingJSON.Count != 0) ? new Tracking(trackingJSON) : null;
+            return response.Data.Tracking;
         }
 
         /// <summary>
@@ -376,68 +378,13 @@ namespace AftershipAPI
         ///<param name="body">String JSON with the body of the request, 
         /// if the request doesn't need body "GET/DELETE", the bodywould be null</param> 
         /// <returns>A String JSON with the response of the request</returns>
-        public JObject Request(string method, string urlResource, string body)
+        public Response Request(string method, string urlResource, string body)
         {
             string url = $"{_url}{VERSION_API}{urlResource}";
+            string json_response = _requestClient.RunRequest(method, body, url);
 
-            HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
-
-            request.Timeout = 150000;
-
-            var header = new WebHeaderCollection
-            {
-                { "aftership-api-key", _tokenAftership }
-            };
-
-            request.Headers = header;
-            request.ContentType = "application/json";
-            request.Method = method;
-
-            if (body != null)
-            {
-                using (var streamWriter = new StreamWriter(request.GetRequestStream()))
-                    streamWriter.Write(body);
-            }
-
-            string json_response = JsonResponseFromWebResponse(request);
-
-            Console.WriteLine($"Response request: {json_response}*");
-            return JObject.Parse(json_response); ;
-        }
-
-        private static string JsonResponseFromWebResponse(HttpWebRequest request)
-        {
-            try
-            {
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-                var reader = new StreamReader(response.GetResponseStream());
-                return reader.ReadToEnd();
-            }
-            catch (WebException e)
-            {
-                if (e.Response == null)
-                {
-                    throw e;
-                    //timeout or bad internet conexion
-                }
-                else
-                {
-                    //probably Aftership will give more information of the problem, so we read the response
-                    HttpWebResponse response = e.Response as HttpWebResponse;
-                    using (var stream = response.GetResponseStream())
-                    using (var reader = new StreamReader(stream))
-                    {
-                        string text = reader.ReadToEnd();
-                        throw new WebException(text, e);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
+            return JsonConvert.DeserializeObject<Response>(json_response, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }); ;
+        }      
 
         /// Parse a List<FieldTracking> to List<String>
         public List<string> ParseListFieldTracking(List<FieldTracking> list) => list.Select(elemement => elemement.ToString()).ToList();
