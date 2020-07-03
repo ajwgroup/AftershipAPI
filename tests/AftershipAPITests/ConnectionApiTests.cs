@@ -39,7 +39,7 @@ namespace AftershipAPITests
         [DataRow(null, " ")]
         [DataRow(" ", null)]
         [DataRow(" ", " ")]
-        public void NewConnectionAPI_KeyAndUrlArguments_EmptyString_ThrowsArgumentError(string? key, string? url)
+        public void NewConnectionAPI_KeyAndUrlArguments_EmptyString_ThrowsArgumentError(string key, string url)
         {
             Action act = () => new ConnectionAPI(key, url);
 
