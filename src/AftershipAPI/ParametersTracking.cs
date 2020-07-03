@@ -5,10 +5,6 @@ using System.Linq;
 
 namespace AftershipAPI
 {
-    /**
- * Keep the information for get trackings from the server, and interact with the results
- * Created by User on 13/6/14.
- */
     public class ParametersTracking
     {
         public int Page { get; set; }
@@ -93,8 +89,8 @@ namespace AftershipAPI
             qs.Add("limit", Limit.ToString());
 
             if (Keyword != null) qs.Add("keyword", Keyword);
-            if (CreatedAtMin != default(DateTime)) qs.Add("created_at_min", DateMethods.ToString(CreatedAtMin));
-            if (CreatedAtMax != default(DateTime)) qs.Add("created_at_max", DateMethods.ToString(CreatedAtMax));
+            if (CreatedAtMin != default) qs.Add("created_at_min", DateMethods.ToString(CreatedAtMin));
+            if (CreatedAtMax != default) qs.Add("created_at_max", DateMethods.ToString(CreatedAtMax));
             if (Lang != null) qs.Add("lang", Lang);
             if (_slugs.Any()) qs.Add("slug", _slugs);
             if (_origins.Any()) qs.Add("origin", string.Join(",", _origins));
