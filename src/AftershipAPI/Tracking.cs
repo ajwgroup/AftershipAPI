@@ -5,9 +5,11 @@ using System.Collections.Generic;
 
 namespace AftershipAPI
 {
+
     public class Tracking
     {
         ///Tracking ID in the Afthership system 
+        [JsonProperty("id")]
         public string Id { get; set; }
 
         ///Tracking number of a shipment. Duplicate tracking numbers, or tracking number with invalid tracking
@@ -17,16 +19,20 @@ namespace AftershipAPI
 
         ///Unique code of each courier. If you do not specify a slug, Aftership will automatically detect
         ///the courier based on the tracking number format and your selected couriers
+        [JsonProperty("slug")]
         public string Slug { get; set; }
 
         /// Email address(es) to receive email notifications. Use comma for multiple emails. 
+        [JsonProperty("emails")]
         public List<string> Emails { get; set; } = new List<string>();
 
         /// Phone number(s) to receive sms notifications. Use comma for multiple emails.
         ///Enter + area code before phone number. 
+        [JsonProperty("smses")]
         public List<string> Smses { get; set; } = new List<string>();
 
         /// Title of the tracking. Default value as trackingNumber 
+        [JsonProperty("title")]
         public string Title { get; set; }
 
         /// Customer name of the tracking. 
@@ -67,6 +73,7 @@ namespace AftershipAPI
 
         /// Whether or not AfterShip will continue tracking the shipments.
         ///Value is `false` when status is `Delivered` or `Expired`. 
+        [JsonProperty("active")]
         public bool Active { get; set; }
 
         /// Expected delivery date (if any). 
@@ -90,12 +97,15 @@ namespace AftershipAPI
         public string SignedBy { get; set; }
 
         ///  Source of how this tracking is added.  
+        [JsonProperty("source")]
         public string Source { get; set; }
 
         /// Current status of tracking. 
+        [JsonProperty("tag")]
         public StatusTag Tag { get; set; }
 
         /// Array of Hash describes the checkpoint information. 
+        [JsonProperty("checkpoints")]
         public List<Checkpoint> Checkpoints { get; set; } = new List<Checkpoint>();
 
         ///Tracking Account number tracking_account_number
