@@ -273,7 +273,8 @@ namespace AftershipAPI
         ///		     phone number is not valid). This response doesn't have checkpoints informed!</returns>
         public Tracking CreateTracking(Tracking tracking)
         {
-            string tracking_json = JsonConvert.SerializeObject(tracking);
+            var request = new Data() { Tracking = tracking};
+            string tracking_json = JsonConvert.SerializeObject(request);
 
             var response = Request("POST", "/trackings", tracking_json);
 
